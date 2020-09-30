@@ -1,0 +1,172 @@
+<!DOCTYPE html5>
+<html lang="en">
+  <head>
+    <title>Create Account</title>
+    <link rel="stylesheet" href="css/login.css" />
+  </head>
+
+  <body>
+    <div id="container">
+      <form name="signup" method="post" action="create.py">
+        <label class="heading"><b>Sign Up</b></label>
+
+        <div class="row">
+          <div class="col-25">
+            <label for="fname">Firstname</label><br /><br />
+            <input name="fname" type="text" /><br /><br />
+          </div>
+
+          <div class="col-25">
+            <label for="lname">Lastname</label><br /><br />
+            <input name="lname" type="text" /><br /><br />
+          </div>
+
+          <div class="col-25">
+            <label for="age">Age</label><br /><br />
+            <input name="age" type="number" /><br /><br />
+          </div>
+
+          <div class="col-25">
+            <label for="polAffil">Political Affiliation</label><br /><br />
+            <select id="polAffli" name="polaffil">
+              <option value=""></option>
+              <option value="Democrat">Democrat</option>
+              <option value="Independent">Independent</option>
+              <option value="Republican">Republican</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-25">
+            <label for="addr">Address</label><br /><br />
+            <input name="addr" type="text" /><br /><br />
+          </div>
+
+          <div class="col-25">
+            <label for="cty">City</label><br /><br />
+            <input name="cty" type="text" /><br /><br />
+          </div>
+
+          <div class="col-25">
+            <label for="st">State</label><br /><br />
+            <select id="st" name="st">
+              <option value=""></option>
+              <!-- JS Script for printing all US states -->
+              <script>
+                var states = [
+                  "Alabama",
+                  "Alaska",
+                  "Arizona",
+                  "Arkansas",
+                  "California",
+                  "Colorado",
+                  "Connecticut",
+                  "Delaware",
+                  "Florida",
+                  "Georgia",
+                  "Hawaii",
+                  "Idaho",
+                  "Illinois",
+                  "Indiana",
+                  "Iowa",
+                  "Kansas",
+                  "Louisiana",
+                  "Maine",
+                  "Maryland",
+                  "Massachusetts",
+                  "Michigan",
+                  "Minnesota",
+                  "Mississippi",
+                  "Missouri",
+                  "Montana",
+                  "Nebraska",
+                  "Nevada",
+                  "New Hampshire",
+                  "New Jersey",
+                  "New Mexico",
+                  "New York",
+                  "North Carolina",
+                  "North Dakota",
+                  "Ohio",
+                  "Oklahoma",
+                  "Pennsylvania",
+                  "Rhode Island",
+                  "South Carolina",
+                  "South Dakota",
+                  "Tennessee",
+                  "Utah",
+                  "Vermont",
+                  "Virginia",
+                  "Washington",
+                  "West Virginia",
+                  "Wisconsin",
+                  "Wyoming",
+                ];
+                states.forEach(printStates);
+
+                /*
+                 * Creates an option tag for each state in the array
+                 */
+                function printStates(state) {
+                  var opt = document.createElement("option");
+                  var text = document.createTextNode(state);
+                  var select = document.getElementById("st");
+
+                  opt.appendChild(text);
+                  opt.setAttribute("value", String(state));
+                  select.appendChild(opt);
+                }
+              </script>
+            </select>
+          </div>
+
+          <div class="col-25">
+            <label for="zip">Zip Code</label><br /><br />
+            <input name="zip" type="number" /><br /><br />
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-75">
+            <label for="email">Email Address</label><br /><br />
+            <input name="email" type="email" /><br /><br />
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-25">
+            <label for="uname">Username</label><br /><br />
+            <input
+              name="uname"
+              type="text"
+              title="Note: all whitespace characters (such as spaces will be removed)"
+            /><br /><br />
+          </div>
+
+          <div class="col-25">
+            <label for="psw">Password</label><br /><br />
+            <input name="psw" type="password" /><br /><br />
+          </div>
+
+          <div class="col-25">
+            <label for="psw">Re-enter Password</label><br /><br />
+            <input name="psw" type="password" /><br /><br />
+          </div>
+        </div>
+
+        <input
+          type="submit"
+          value="Sign Up"
+          title="Note: if you are taken back to the Login page, then your account was created"
+        /><br /><br />
+
+        <div class="separate">
+          <button class="cancel">
+            <a href="login.html" title="Cancel">Cancel</a>
+          </button>
+        </div>
+      </form>
+    </div>
+  </body>
+</html>
