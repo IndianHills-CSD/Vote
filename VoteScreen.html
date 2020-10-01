@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Vote Screen</title>
+</head>
+<style>
+html {
+background-color: red;
+background-image: linear-gradient(to right, red, white, blue);
+}
+label {
+  font-size: 25px;
+}
+#main {
+  flex-direction: column;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 500px;
+  margin-right: 500px;
+  box-shadow: 0 0 0 5px blue, 0 0 0 10px white, 0 0 0 15px red;
+}
+
+</style>
+<header>
+</header>
+
+<body>
+<div id="main">
+<h1>VOTE<h1>
+ <form>
+   <label>Which party are you voting for?</label><br>
+   <input type="radio" id="vote1" name="party" value="Democrat" required>
+   <label for="vote1">Democrat</label><br>
+   <input type="radio" id="vote2" name="party" value="Republican" required>
+   <label for="vote2">Republican</label><br>
+   <input type="radio" id="vote3" name="party" value="Green Party" required>
+   <label for="vote3">Green Party</label><br>
+   <input type="radio" id="vote4" name="party" value="Libertarian" onclick='alert("ok Libtard")'  required>
+   <label for="vote4">Libertarian</label><br><br>
+   <input type="submit" value="Submit">
+
+	
+ </form>
+
+
+</body>
+</div>
+</div>
+<footer>
+</footer>
+</html>
