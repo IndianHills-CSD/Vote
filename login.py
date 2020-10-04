@@ -1,9 +1,7 @@
 #! C:\Python38-32\python.exe -u
 
 import cgi, cgitb, re, encryptionlib as enc, os, mysql.connector as mysql
-
-# from connectlib import connect_db
-from mysql.connector import Error
+from connectlib import connect_db
 
 
 def valid_account(uname, psw):
@@ -11,7 +9,7 @@ def valid_account(uname, psw):
     Checks if a valid username and password was entered
     """
     global errmsgs
-    errors = 0  # keeps track of all errors
+    errors = 0
 
     try:
         # Username validation
@@ -55,48 +53,76 @@ def verify_account(uname, psw):
     """
     Verifies that an account exists by searching for it in the database
     """
-    global errmsgs  # ,db
+    global errmsgs, db
     errors = 0
 
-    # cursor = db.cursor()
+    cursor = db.cursor(prepared=True)
 
-    # SELECT statement for verifying the username that was entered
-    select_uname = "SELECT uname, psw FROM accounts WHERE uname = '%s'"
-    value = uname
+    # SELECT statement
+    select = "SELECT psw FROM accounts WHERE uname = '%s'"
 
-    # SELECT statement for checking the password
-    select_psw = "SELECT psw FROM accounts"
-
-    # Executes the select statements
-    # cursor.execute(select_uname, value)
-    # cursor.execute(select_psw)
-
-    # Gets the first row of the results (should only return one row)
-    # result1 = cursor.fetchone()
+    cursor.execute(select, uname)
 
     # Gets all the rows from the results
-    # result2 = cursor.fetchall()
-
-    #for row in result2:
-    #    enc.verify_hash(
-    #        row,
-    #        psw,
-    #    )
+    result = cursor.fetchall()
 
     # Checks if no matches were found
-    # if not result1 :
-    #    errors += 1
-    #    errmsgs.append(
-    #       "        <p>The account that was entered doesn't exist, please consider creating an account</p>"
-    #    )
+    if not result:
+        errors += 1
+        errmsgs.append(
+            "        <p>The account that was entered doesn't exist, please consider creating an account</p>"
+        )
+    else:
+        if result[0] != uname:
+            salt = eval(find_salt(cursor))
+            enc.verify_hash(result[0], psw, salt)
 
-    # return errors
+    return errors
+
+
+def find_salt(cursor):
+    """
+    Determines which salt to use for verifying passwords
+    """
+    salt = ""
+
+    # SELECT statement
+    select = "SELECT salt FROM accounts NATURAL JOIN salt WHERE accId = %s"
+
+    accid = find_accid(cursor)
+
+    cursor.execute(select, accid)
+    result = cursor.fetchall()
+
+    if result:
+        salt = str(result[0])
+
+    return salt
+
+
+def find_accid(cursor):
+    """
+    Finds the id of an account in the Salt table
+    """
+    global uname
+    accid = 0
+
+    # SELECT statement
+    select = "SELECT accId FROM accounts WHERE uname = %s"
+
+    cursor.execute(select, uname)
+    result = cursor.fetchall()
+
+    if result:
+        accid = int(result[0])
+
+    return accid
 
 
 cgitb.enable()  # for debugging
 
 # Connects to the database
-# db = connect_db()
+db = connect_db()
 
 # Intializes an empty list of error messages
 errmsgs = []

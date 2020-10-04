@@ -9,7 +9,7 @@ def valid_name(fname, lname):
     Checks if a valid firstname and lastname was entered
     """
     global errmsgs
-    errors = 0  # keeps track of all the errors that have occured
+    errors = 0
 
     if len(fname.strip()) == 0 or len(lname.strip()) == 0:
         errors += 1
@@ -28,7 +28,7 @@ def valid_age(age):
     Checks if a valid age was entered
     """
     global errmsgs
-    errors = 0  # keeps track of all the errors
+    errors = 0
 
     if not age.isdigit():
         errors += 1
@@ -45,7 +45,7 @@ def valid_pol_affil(polaffil):
     Checks if a valid political affiliation was selected
     """
     global errmsgs
-    errors = 0  # keeps track of all the errors
+    errors = 0
 
     if len(polaffil.strip()) == 0:
         errors += 1
@@ -59,7 +59,7 @@ def valid_address(addr, cty, st, zip):
     Checks if a valid address, city, zip code was entered and checks if a valid state was selected
     """
     global errmsgs
-    errors = 0  # keeps track of all errors
+    errors = 0
     # Regex Pattern for Addresses
     addrformat = re.search(
         "^([\d]{1,3}[\s][A-Z|a-z|\d](([\d|\s|A-Z|a-z])?){1,})$", addr
@@ -103,7 +103,7 @@ def valid_email(email):
     Checks if a valid email was entered
     """
     global errmsgs
-    errors = 0  # keeps track of all the errors
+    errors = 0
     # Regex Pattern for Emails
     emailformat = re.search("^([\S]{1,}[@][\w]{4,}[\.][a-z]{2,4})$", email)
 
@@ -120,7 +120,8 @@ def valid_email(email):
 
 def valid_account(uname, psw1, psw2):
     """
-    Checks if a valid username and password was entered and checks if the same password was re-entered
+    Checks if a valid username and password was entered and checks if the same password was 
+    re-entered
     """
     global errmsgs
     errors = 0  # keeps track of all errors
@@ -184,7 +185,8 @@ def select_account(uname, addr):
     """
     Checks if a users account needs to be inserted into the Accounts table
     """
-    global cursor
+    global cursor, errmsgs
+    errors = 0
 
     # SELECT statement
     select = "SELECT * FROM accounts WHERE uname = '%s' AND addr = '%s'"
@@ -196,6 +198,9 @@ def select_account(uname, addr):
 
     if not result:
         insert_account()
+    else:
+        errors += 1
+        errmsgs.append("        <p>Account already exists</p>")
 
 
 def insert_account():
@@ -213,7 +218,7 @@ def insert_account():
 
     try:
         # Prepare Statement
-        prep = "INSERT INTO accounts (uname, psw, fname, lname, email, age, addr, city, state, zipCode, poliAffil) VALUES ('%s', '%s', '%s', '%s', '%s', %i, '%s', '%s', '%s', %i, '%s')"
+        prep = "INSERT INTO accounts (uname, psw, fname, lname, email, age, addr, city, state, zipCode, poliAffil) VALUES ('%s', '%s', '%s', '%s', '%s', %s, '%s', '%s', '%s', %s, '%s')"
         values = (
             uname,
             enc_psw,
@@ -229,11 +234,53 @@ def insert_account():
         )
 
         cursor.execute(prep, values)
+        print("<script>alert('The account was created')</script>")
+
+        store_salt(salt)
 
         db.commit()  # saves changes
 
     except mysql.Error as e:
-        print("<script>console.log('", e, "')</script>")
+        print("<script>console.log('", e, "');</script>")
+
+
+def store_salt(salt):
+    """
+    Stores the salt used to encrypt data in the database using the prepare statement
+    """
+    global cursor
+
+    try:
+        accid = find_accid()
+
+        # Prepare statement
+        prep = "INSERT INTO salt (accId, salt) VALUES (%s, %s)"
+        values = (accid, salt)
+
+        cursor.execute(prep, values)
+        print("<script>console.log('Salt was saved');</script>")
+
+    except mysql.Error as e:
+        print("<script>console.log('", e, "');</script>")
+
+
+def find_accid():
+    """
+    Finds the id of an account in the Salt table
+    """
+    global cursor, uname
+    accid = 0
+
+    # SELECT statement
+    select = "SELECT accId FROM accounts WHERE uname = %s"
+
+    cursor.execute(select, uname)
+    result = cursor.fetchall()
+
+    if result:
+        accid = int(result[0])
+
+    return accid
 
 
 cgitb.enable()  # for debugging
@@ -241,7 +288,7 @@ cgitb.enable()  # for debugging
 # Connects to the database
 db = connect_db()
 
-cursor = db.cursor(prepared=True)  # allows the prepare statment to be used
+cursor = db.cursor(prepared=True)  # allows the prepare statement to be used
 
 # Intializes an empty list of error messages
 errmsgs = []
@@ -327,12 +374,12 @@ else:
 
 errctr += valid_account(uname, psw1, psw2)
 
+# Checks if the account that was entered is already exists
+# errctr += select_account(uname, addr)
+
 print("Content-Type: text/html")
 
 if errctr == 0:
-    # Checks if the account that was entered is already in the Accounts table
-    # select_account(uname, addr)
-
     # Sets the new location (URL) to the login.html page
     print("Location: http://localhost/vote-project/login.html")
     print()
