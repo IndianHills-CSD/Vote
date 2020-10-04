@@ -120,7 +120,7 @@ def valid_email(email):
 
 def valid_account(uname, psw1, psw2):
     """
-    Checks if a valid username and password was entered and checks if the same password was 
+    Checks if a valid username and password was entered and checks if the same password was
     re-entered
     """
     global errmsgs
@@ -405,7 +405,7 @@ if errctr == 0:
 else:
     # Printed when invalid account information is entered
     print()  # adds a blank line since a blank line needs to follow the Content-Type
-    print("<!DOCTYPE html5>")
+    print("<!DOCTYPE html>")
     print('<html lang="en">')
     print("  <head>")
     print("    <title>Create Account</title>")

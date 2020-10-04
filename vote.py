@@ -58,7 +58,7 @@ print("Content-Type: text/html\n")
 
 if errctr == 0:
     # For when the page is still redirecting
-    print("<!DOCTYPE html5>")
+    print("<!DOCTYPE html>")
     print('<html lang="en">')
     print("  <head>")
     print("    <title>Vote</title>")
@@ -76,7 +76,7 @@ if errctr == 0:
     print("</html>")
 else:
     # Printed when invalid usernames and/or passwords are entered
-    print("<!DOCTYPE html5>")
+    print("<!DOCTYPE html>")
     print('<html lang="en">')
     print("  <head>")
     print("    <title>Vote</title>")

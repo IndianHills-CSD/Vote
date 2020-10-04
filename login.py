@@ -152,7 +152,7 @@ if errctr == 0:
     print()
 
     # For when the page is still redirecting
-    print("<!DOCTYPE html5>")
+    print("<!DOCTYPE html>")
     print('<html lang="en">')
     print("  <head>")
     print("    <title>Login</title>")
@@ -172,7 +172,7 @@ if errctr == 0:
 else:
     # Printed when invalid usernames and/or passwords are entered
     print()  # adds a blank line since a blank line needs to follow the Content-Type
-    print("<!DOCTYPE html5>")
+    print("<!DOCTYPE html>")
     print('<html lang="en">')
     print("  <head>")
     print("    <title>Login</title>")

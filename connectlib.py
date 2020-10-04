@@ -18,7 +18,7 @@ def connect_db():
         return conn
 
     except Error as e:
-        print("<!DOCTYPE html5>")
+        print("<!DOCTYPE html>")
         print('<html lang="en">')
         print("  <head>")
         print("    <title>Database Eror</title>")
