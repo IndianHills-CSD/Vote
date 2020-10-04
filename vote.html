@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Vote</title>
+    <link rel="stylesheet" href="css/vote-donate.css" />
+  </head>
+  <body>
+    <header></header>
+    <div id="main">
+      <h1>VOTE</h1>
+      <form name="vote" method="post" action="vote.py">
+        <!-- Poltical Party -->
+        <div class="row">
+          <div class="col-75">
+            <label for="party">Political Party</label>
+
+            <div class="wrapper">
+              <input type="radio" name="party" value="Democrat" />
+              <label for="party" class="radio-label">Democrat</label>
+            </div>
+
+            <div class="wrapper">
+              <input type="radio" name="party" value="Republican" />
+              <label for="party" class="radio-label">Republican</label>
+            </div>
+
+            <div class="wrapper">
+              <input type="radio" name="party" value="Green Party" />
+              <label for="party" class="radio-label">Green Party</label>
+            </div>
+
+            <div class="wrapper">
+              <input
+                type="radio"
+                name="party"
+                value="Libertarian"
+                onclick='alert("ok Libtard")'
+              />
+              <label for="party" class="radio-label">Libertarian</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Candidate -->
+        <div class="row">
+          <div class="col-75">
+            <label for="can">Candidate</label><br />
+            <input type="text" name="can" /><br />
+          </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="row">
+          <div class="col-50">
+            <input type="submit" value="Submit" />
+          </div>
+
+          <div class="col-50">
+            <input type="reset" value="Clear" />
+          </div>
+        </div>
+      </form>
+    </div>
+    <footer></footer>
+  </body>
+</html>
