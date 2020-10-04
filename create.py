@@ -1,6 +1,7 @@
 #! C:\Python38-32\python.exe -u
 
-import cgi, cgitb, re, hashlib, os, mysql.connector as mysql
+import cgi, cgitb, re, encryptionlib as enc, os, mysql.connector as mysql
+from connectlib import connect_db
 
 
 def valid_name(fname, lname):
@@ -8,21 +9,16 @@ def valid_name(fname, lname):
     Checks if a valid firstname and lastname was entered
     """
     global errmsgs
-    errors = 0  # keeps track of all the errors that have been
+    errors = 0  # keeps track of all the errors that have occured
 
-    if len(fname.strip()) == 0:
+    if len(fname.strip()) == 0 or len(lname.strip()) == 0:
         errors += 1
-        errmsgs.append("        <p>Firstname was not entered</p>")
-    elif not fname.isalpha():
+        errmsgs.append("        <p>Name is either incomplete or was not entered</p>")
+    elif not fname.isalpha() or not lname.isalpha():
         errors += 1
-        errmsgs.append("        <p>Firstname should only contain letters</p>")
-
-    if len(lname.strip()) == 0:
-        errors += 1
-        errmsgs.append("        <p>Lastname was not entered</p>")
-    elif not lname.isalpha():
-        errors += 1
-        errmsgs.append("        <p>Lastname should only contain letters</p>")
+        errmsgs.append(
+            "        <p>The name that was entered should only contain letters</p>"
+        )
 
     return errors
 
@@ -128,6 +124,7 @@ def valid_account(uname, psw1, psw2):
     """
     global errmsgs
     errors = 0  # keeps track of all errors
+    valPsws = True  # determines if psw1 and psw2 should be checked for equality
 
     try:
         # Username validation
@@ -144,23 +141,37 @@ def valid_account(uname, psw1, psw2):
         errmsgs.append("        <p>Username was not entered</p>")
 
     try:
-        wschar = re.search("\s{1,}", psw2)  # checks for any whitespace characters
-        digits = re.search("\d{1,}", psw2)  # checks for 1 or more digits
+        wschar = re.search("\s{1,}", psw1)  # checks for any whitespace characters
+        digits = re.search("\d{1,}", psw1)  # checks for 1 or more digits
+        wschar2 = re.search("\s{1,}", psw2)  # checks for any whitespace characters
+        digits2 = re.search("\d{1,}", psw2)  # checks for 1 or more digits
 
         # Password validation
-        if psw1 != psw2:
+        if len(psw1.strip()) == 0 or len(psw2.strip()) == 0:
             errors += 1
             errmsgs.append(
-                "        <p>The password that was re-entered does not match the original password that was entered</p>"
+                "        <p>Password was either not entered at all or not re-entered</p>"
             )
-        else:
-            if len(psw2.strip()) == 0:
-                errors += 1
-                errmsgs.append("        <p>Password was not entered</p>")
-            elif len(psw2.strip()) < 8 or wschar or not digits:
+            valPsws = False
+        elif (
+            len(psw1.strip()) < 8
+            or wschar
+            or not digits
+            or len(psw2.strip()) < 8
+            or wschar2
+            or not digits2
+        ):
+            errors += 1
+            errmsgs.append(
+                "        <p>Password should be at least 8 characters long, contain no whitespace characters, and contain at least 1 digit</p>"
+            )
+            valPsws = False
+
+        if valPsws:
+            if psw1.strip() != psw2.strip():
                 errors += 1
                 errmsgs.append(
-                    "        <p>Password should be at least 8 characters long and contain no whitespace characters and at least 1 digit</p>"
+                    "        <p>The password that was re-entered does not match the original password that was entered</p>"
                 )
     except AttributeError:
         errors += 1
@@ -169,12 +180,73 @@ def valid_account(uname, psw1, psw2):
     return errors
 
 
-# function for MySQL database processing code goes here
+def select_account(uname, addr):
+    """
+    Checks if a users account needs to be inserted into the Accounts table
+    """
+    global cursor
+
+    # SELECT statement
+    select = "SELECT * FROM accounts WHERE uname = '%s' AND addr = '%s'"
+    values = (uname, addr)
+
+    cursor.execute(select, values)
+
+    result = cursor.fetchall()
+
+    if not result:
+        insert_account()
+
+
+def insert_account():
+    """
+    Inserts a users account into the Accounts table using the prepare statement
+    """
+    global uname, psw1, fname, lname, email, age, addr, cty, st, zipcode, polaffil, cursor
+
+    # Generates a random number of bytes to be used to create a new hash
+    salt = os.urandom(60)
+
+    # Encrypts the password and email that was entered
+    enc_psw = enc.create_hash(psw1, salt)
+    enc_email = enc.create_hash(email, salt)
+
+    try:
+        # Prepare Statement
+        prep = "INSERT INTO accounts (uname, psw, fname, lname, email, age, addr, city, state, zipCode, poliAffil) VALUES ('%s', '%s', '%s', '%s', '%s', %i, '%s', '%s', '%s', %i, '%s')"
+        values = (
+            uname,
+            enc_psw,
+            fname,
+            lname,
+            enc_email,
+            age,
+            addr,
+            cty,
+            st,
+            zipcode,
+            polaffil,
+        )
+
+        cursor.execute(prep, values)
+
+        db.commit()  # saves changes
+
+    except mysql.Error as e:
+        print("<script>console.log('", e, "')</script>")
 
 
 cgitb.enable()  # for debugging
+
+# Connects to the database
+db = connect_db()
+
+cursor = db.cursor(prepared=True)  # allows the prepare statment to be used
+
 # Intializes an empty list of error messages
 errmsgs = []
+
+errctr = 0  # keeps track of all the errors that have occurred
 form = cgi.FieldStorage()
 
 # Name Validation
@@ -188,7 +260,7 @@ if "lname" in form:
 else:
     lname = ""
 
-errctr = valid_name(fname, lname)
+errctr += valid_name(fname, lname)
 
 # Age Validation
 if "age" in form:
@@ -196,7 +268,7 @@ if "age" in form:
 else:
     age = ""
 
-errctr = valid_age(age)
+errctr += valid_age(age)
 
 # Political Affiliation Validation
 if "polaffil" in form:
@@ -204,7 +276,7 @@ if "polaffil" in form:
 else:
     polaffil = ""
 
-errctr = valid_pol_affil(polaffil)
+errctr += valid_pol_affil(polaffil)
 
 # Address, City, State, and Zip Code Validation
 if "addr" in form:
@@ -227,7 +299,7 @@ if "zip" in form:
 else:
     zipcode = ""
 
-errctr = valid_address(addr, cty, st, zipcode)
+errctr += valid_address(addr, cty, st, zipcode)
 
 # Email Validation
 if "email" in form:
@@ -235,7 +307,7 @@ if "email" in form:
 else:
     email = ""
 
-errctr = valid_email(email)
+errctr += valid_email(email)
 
 # Username and Password Validation
 if "uname" in form:
@@ -243,56 +315,62 @@ if "uname" in form:
 else:
     uname = ""
 
-if "psw" in form:
-    psw = form.getlist("psw")
+if "psw1" in form:
+    psw1 = form.getvalue("psw1")
 else:
-    psw = ["", ""]
+    psw1 = ""
 
-errctr = valid_account(uname, psw[0], psw[1])
+if "psw2" in form:
+    psw2 = form.getvalue("psw2")
+else:
+    psw2 = ""
+
+errctr += valid_account(uname, psw1, psw2)
 
 print("Content-Type: text/html")
 
 if errctr == 0:
+    # Checks if the account that was entered is already in the Accounts table
+    # select_account(uname, addr)
+
     # Sets the new location (URL) to the login.html page
     print("Location: http://localhost/vote-project/login.html")
     print()
 
-    # call to MySQL database processing function
-
-    # For when the page is being redirecting
+    # For when the page is still redirecting
     print("<!DOCTYPE html5>")
     print('<html lang="en">')
     print("  <head>")
     print("    <title>Create Account</title>")
-    print('    <link rel="stylesheet" href="css/login.css" />')
+    print('    <link rel="stylesheet" href="css/main-styles.css" />')
     print("  </head>")
     print("  <body>")
     print('    <div id="container">')
     print('      <div id="content">')
     print("        <h1>Redirecting...</h1>")
     print(
-        '        <a href="login.html">Click here if you are still being redirected</a>'
+        '          <a href="login.html">Click here if you are still being redirected</a>'
     )
     print("      </div>")
     print("    </div>")
     print("  </body>")
     print("</html>")
 else:
-    # Printed when invalid usernames and/or passwords are entered
+    # Printed when invalid account information is entered
     print()  # adds a blank line since a blank line needs to follow the Content-Type
     print("<!DOCTYPE html5>")
     print('<html lang="en">')
     print("  <head>")
     print("    <title>Create Account</title>")
-    print('    <link rel="stylesheet" href="css/login.css" />')
+    print('    <link rel="stylesheet" href="css/main-styles.css" />')
     print("  </head>")
     print("  <body>")
     print('    <div id="container">')
     print('      <div id="content">')
     print("        <h1>Error</h1>")
 
-    # Prints any error messages when an invalid username or password is entered
-    for i in range(len(errmsgs)):
+    # Prints any error messages when errors occur
+    for i in range(errctr):
         print(errmsgs[i])
 
     print('        <a href="create.html">Click here fix your mistakes</a>')

@@ -1,6 +1,9 @@
 #! C:\Python38-32\python.exe -u
 
-import cgi, cgitb, re, hashlib, os, mysql.connector as mysql
+import cgi, cgitb, re, encryptionlib as enc, os, mysql.connector as mysql
+
+# from connectlib import connect_db
+from mysql.connector import Error
 
 
 def valid_account(uname, psw):
@@ -41,15 +44,64 @@ def valid_account(uname, psw):
         errors += 1
         errmsgs.append("        <p>Password was not entered</p>")
 
+    # Calls verify_account() when no errors occur
+    #   if errors == 0:
+    #      errors += verify_account(uname, psw)
+
     return errors
 
 
-# function for MySQL database processing code goes here
+def verify_account(uname, psw):
+    """
+    Verifies that an account exists by searching for it in the database
+    """
+    global errmsgs  # ,db
+    errors = 0
+
+    # cursor = db.cursor()
+
+    # SELECT statement for verifying the username that was entered
+    select_uname = "SELECT uname, psw FROM accounts WHERE uname = '%s'"
+    value = uname
+
+    # SELECT statement for checking the password
+    select_psw = "SELECT psw FROM accounts"
+
+    # Executes the select statements
+    # cursor.execute(select_uname, value)
+    # cursor.execute(select_psw)
+
+    # Gets the first row of the results (should only return one row)
+    # result1 = cursor.fetchone()
+
+    # Gets all the rows from the results
+    # result2 = cursor.fetchall()
+
+    #for row in result2:
+    #    enc.verify_hash(
+    #        row,
+    #        psw,
+    #    )
+
+    # Checks if no matches were found
+    # if not result1 :
+    #    errors += 1
+    #    errmsgs.append(
+    #       "        <p>The account that was entered doesn't exist, please consider creating an account</p>"
+    #    )
+
+    # return errors
 
 
 cgitb.enable()  # for debugging
+
+# Connects to the database
+# db = connect_db()
+
 # Intializes an empty list of error messages
 errmsgs = []
+errctr = 0  # keeps track of all the errors that have occurred
+
 form = cgi.FieldStorage()
 
 # Username and Password Validation
@@ -64,7 +116,7 @@ else:
         uname = form.getvalue("uname")
         psw = ""
 
-errctr = valid_account(uname, psw)
+errctr += valid_account(uname, psw)
 
 print("Content-Type: text/html")
 
@@ -73,14 +125,12 @@ if errctr == 0:
     print("Location: http://localhost/vote-project/index.html")
     print()
 
-    # call to MySQL database processing function
-
-    # For when the page is being redirecting
+    # For when the page is still redirecting
     print("<!DOCTYPE html5>")
     print('<html lang="en">')
     print("  <head>")
     print("    <title>Login</title>")
-    print('    <link rel="stylesheet" href="css/login.css" />')
+    print('    <link rel="stylesheet" href="css/main-styles.css" />')
     print("  </head>")
     print("  <body>")
     print('    <div id="container">')
@@ -100,7 +150,7 @@ else:
     print('<html lang="en">')
     print("  <head>")
     print("    <title>Login</title>")
-    print('    <link rel="stylesheet" href="css/login.css" />')
+    print('    <link rel="stylesheet" href="css/main-styles.css" />')
     print("  </head>")
     print("  <body>")
     print('    <div id="container">')
