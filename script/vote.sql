@@ -41,3 +41,12 @@ CREATE TABLE IF NOT EXISTS donations (
 	credExpMon VARCHAR(9) NOT NULL,	-- the credit card's expiration month
 	creditExpYr YEAR NOT NULL	-- the credit card's expiration year
 ) ENGINE = innoDB;
+
+/* Salt Table */
+-- Creates the table that is used to contains the salt for encrypting data
+CREATE TABLE IF NOT EXISTS salt (
+	salId INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+	accId INT UNSIGNED,
+	FOREIGN KEY(accId) REFERENCES accounts(accId),
+	salt VARCHAR(255)
+) ENGINE = innoDB;
