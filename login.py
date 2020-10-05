@@ -1,6 +1,7 @@
 #! C:\Python38-32\python.exe -u
 
-import cgi, cgitb, re, hashlib, os, mysql.connector as mysql
+import cgi, cgitb, re, encryptionlib as enc, os, mysql.connector as mysql
+from connectlib import connect_db
 
 
 def valid_account(uname, psw):
@@ -8,51 +9,125 @@ def valid_account(uname, psw):
     Checks if a valid username and password was entered
     """
     global errmsgs
-    errors = 0  # keeps track of all the errors that have been
+    errors = 0
 
     try:
-        unmelen = len(uname.strip())
-
         # Username validation
-        if unmelen == 0:
-            errors = errors + 1
+        if len(uname.strip()) == 0:
+            errors += 1
             errmsgs.append("        <p>Username was not entered</p>")
-        elif unmelen < 4:
-            errors = errors + 1
+        elif len(uname.strip()) < 4:
+            errors += 1
             errmsgs.append(
                 "        <p>Username should be at least 4 characters long</p>"
             )
     except AttributeError:
-        errors = errors + 1
+        errors += 1
         errmsgs.append("        <p>Username was not entered</p>")
 
     try:
-        pswlen = len(psw.strip())
-        wschar = re.search("\s", psw)  # checks for any whitespace characters
+        wschar = re.search("\s{1,}", psw)  # checks for any whitespace characters
         digits = re.search("\d{1,}", psw)  # checks for 1 or more digits
 
         # Password validation
-        if pswlen == 0:
-            errors = errors + 1
+        if len(psw.strip()) == 0:
+            errors += 1
             errmsgs.append("        <p>Password was not entered</p>")
-        elif pswlen < 8 or wschar or not digits:
-            errors = errors + 1
+        elif len(psw.strip()) < 8 or wschar or not digits:
+            errors += 1
             errmsgs.append(
                 "        <p>Password should be at least 8 characters long and contain no whitespace characters and at least 1 digit</p>"
             )
     except AttributeError:
-        errors = errors + 1
+        errors += 1
         errmsgs.append("        <p>Password was not entered</p>")
+
+    # Calls verify_account() when no errors occur
+    #   if errors == 0:
+    #      errors += verify_account(uname, psw)
 
     return errors
 
 
-# function for MySQL database processing code goes here
+def verify_account(uname, psw):
+    """
+    Verifies that an account exists by searching for it in the database
+    """
+    global errmsgs, db
+    errors = 0
+
+    cursor = db.cursor(prepared=True)
+
+    # SELECT statement
+    select = "SELECT psw FROM accounts WHERE uname = '%s'"
+
+    cursor.execute(select, uname)
+
+    # Gets all the rows from the results
+    result = cursor.fetchall()
+
+    # Checks if no matches were found
+    if not result:
+        errors += 1
+        errmsgs.append(
+            "        <p>The account that was entered doesn't exist, please consider creating an account</p>"
+        )
+    else:
+        if result[0] != uname:
+            salt = eval(find_salt(cursor))
+            enc.verify_hash(result[0], psw, salt)
+
+    return errors
+
+
+def find_salt(cursor):
+    """
+    Determines which salt to use for verifying passwords
+    """
+    salt = ""
+
+    # SELECT statement
+    select = "SELECT salt FROM accounts NATURAL JOIN salt WHERE accId = %s"
+
+    accid = find_accid(cursor)
+
+    cursor.execute(select, accid)
+    result = cursor.fetchall()
+
+    if result:
+        salt = str(result[0])
+
+    return salt
+
+
+def find_accid(cursor):
+    """
+    Finds the id of an account in the Salt table
+    """
+    global uname
+    accid = 0
+
+    # SELECT statement
+    select = "SELECT accId FROM accounts WHERE uname = %s"
+
+    cursor.execute(select, uname)
+    result = cursor.fetchall()
+
+    if result:
+        accid = int(result[0])
+
+    return accid
 
 
 cgitb.enable()  # for debugging
+
+# Connects to the database
+db = connect_db()
+
 # Intializes an empty list of error messages
 errmsgs = []
+errctr = 0  # keeps track of all the errors that have occurred
+
 form = cgi.FieldStorage()
 
 # Username and Password Validation
@@ -67,23 +142,21 @@ else:
         uname = form.getvalue("uname")
         psw = ""
 
-errctr = valid_account(uname, psw)
+errctr += valid_account(uname, psw)
 
 print("Content-Type: text/html")
 
 if errctr == 0:
     # Sets the new location (URL) to the index.html page
-    # print("Location: http://localhost/vote-project/index.html")
+    print("Location: http://localhost/vote-project/index.html")
     print()
 
-    # call to MySQL database processing function
-
-    # For when the page is beeing redirecting
-    print("<!DOCTYPE html5>")
+    # For when the page is still redirecting
+    print("<!DOCTYPE html>")
     print('<html lang="en">')
     print("  <head>")
     print("    <title>Login</title>")
-    print('    <link rel="stylesheet" href="css/login.css" />')
+    print('    <link rel="stylesheet" href="css/main-styles.css" />')
     print("  </head>")
     print("  <body>")
     print('    <div id="container">')
@@ -99,11 +172,11 @@ if errctr == 0:
 else:
     # Printed when invalid usernames and/or passwords are entered
     print()  # adds a blank line since a blank line needs to follow the Content-Type
-    print("<!DOCTYPE html5>")
+    print("<!DOCTYPE html>")
     print('<html lang="en">')
     print("  <head>")
     print("    <title>Login</title>")
-    print('    <link rel="stylesheet" href="css/login.css" />')
+    print('    <link rel="stylesheet" href="css/main-styles.css" />')
     print("  </head>")
     print("  <body>")
     print('    <div id="container">')

@@ -1,0 +1,152 @@
+/* Global Styles */
+
+* {
+    box-sizing: border-box;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+body {
+    background: linear-gradient(to right, rgba(255, 0, 0, .7), rgba(255, 255, 255, .9), rgba(0, 0, 255, .5));
+    margin: 0;
+}
+
+:focus {
+    outline: none;
+}
+
+#main {
+    flex-direction: column;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+form {
+    padding: 20px;
+    color: #000;
+    min-width: 45%;
+    background: linear-gradient(to right, rgba(167, 167, 209, .7), rgba(255, 255, 255, .9), rgba(178, 34, 52, .5)), url(../images/pexels-sharefaith-1202723-640.jpg) no-repeat;
+    background-size: 100% 100%;
+    box-shadow: 0 0 0 5px #00f, 0 0 0 10px #fff, 0 0 0 15px #f00;
+}
+
+.row {
+    display: flex;
+    flex-flow: wrap;
+    margin: 0 -16px;
+}
+
+.col-25 {
+    flex: 25%;
+}
+
+.col-50 {
+    flex: 50%;
+}
+
+.col-75 {
+    flex: 75%;
+}
+
+.col-25,
+.col-50,
+.col-75 {
+    padding: 0 16px;
+}
+
+label,
+input,
+select {
+    margin: 10px 0;
+}
+
+label {
+    font-size: 1.5625em;
+}
+
+input:not([type=submit]):not([type=reset]):not([type=radio]),
+select {
+    border: 1px #f5f5f5 solid;
+    padding: 15px 17px;
+}
+
+input:not([type=radio]),
+select {
+    display: inline-block;
+    width: 100%;
+}
+
+input:not([type=submit]):not([type=reset]):hover,
+select:hover,
+input:not([type=submit]):not([type=reset]):focus,
+select:focus {
+    border-color: #0080ff;
+}
+
+select,
+input[type=submit],
+input[type=reset],
+input[type=radio] {
+    cursor: pointer;
+}
+
+input[type=submit],
+input[type=reset] {
+    font-weight: bold;
+}
+
+input[type=submit]:hover,
+input[type=reset]:hover,
+input[type=submit]:focus,
+input[type=reset]:focus {
+    opacity: .8;
+}
+
+input[type=submit],
+input[type=reset] {
+    color: #fff;
+    display: inline-block;
+    background-color: #00f;
+    padding: 10px;
+    border: 3px #f00 solid;
+    width: 100%;
+}
+
+
+/* donation.html Styles */
+
+
+/* prepare wrapper element */
+
+div {
+    display: inline-block;
+    position: relative;
+}
+
+
+/* position the unit to the right of the wrapper */
+
+div.usd::after {
+    position: absolute;
+    top: 34%;
+    left: .5em;
+    transition: all .05s ease-in-out;
+}
+
+.usd::after {
+    content: "$";
+}
+
+
+/* vote.html Styles */
+
+label.radio-label {
+    font-size: 1.2em;
+    font-weight: lighter;
+    margin-left: 10px;
+}
+
+.wrapper {
+    display: flex;
+    align-items: center;
+}

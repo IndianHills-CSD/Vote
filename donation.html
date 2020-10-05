@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Donations</title>
+    <link rel="stylesheet" href="css/vote-donate.css" />
+    <script src="js/monthsAndDecimals.js" defer></script>
+  </head>
+  <body>
+    <header></header>
+    <div id="main">
+      <h1>Donations</h1>
+      <form name="donate" method="post" action="donation.py">
+        <!-- Account Verification -->
+        <div class="row">
+          <div class="col-50">
+            <label for="uname">Username</label><br />
+            <input type="text" name="uname" />
+          </div>
+
+          <div class="col-50">
+            <label for="psw">Password</label>
+            <input type="password" name="psw" />
+          </div>
+        </div>
+
+        <!-- Donation Information-->
+        <div class="row">
+          <div class="col-75">
+            <label for="can">Candidate</label>
+            <input type="text" name="can" />
+          </div>
+
+          <div class="col-25">
+            <label for="amt">Amount</label>
+            <div class="usd">
+              <input
+                onfocusout="decimals()"
+                type="number"
+                class="usd"
+                name="amt"
+                step="0.01"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Credit Card Information -->
+        <div class="row">
+          <div class="col-25">
+            <label for="ccnum">Card Number</label><br />
+            <input type="text" name="ccnum" />
+          </div>
+
+          <div class="col-25">
+            <label for="cvv">CVV</label><br />
+            <input type="number" name="cvv" />
+          </div>
+
+          <div class="col-25">
+            <label for="expm">Expiration Month</label><br />
+            <select name="expm" id="expm">
+              <option value=""></option>
+            </select>
+          </div>
+
+          <div class="col-25">
+            <label for="expy">Expiration Year</label><br />
+            <input type="number" name="expy" />
+          </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="row">
+          <div class="col-50">
+            <input type="submit" value="Submit" />
+          </div>
+
+          <div class="col-50">
+            <input type="reset" value="Clear" />
+          </div>
+        </div>
+      </form>
+    </div>
+    <footer></footer>
+  </body>
+</html>

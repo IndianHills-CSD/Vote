@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Create Account</title>
+    <link rel="stylesheet" href="css/main-styles.css" />
+    <script src="js/states.js" defer></script>
+  </head>
+  <body>
+    <div id="container">
+      <form name="signup" method="post" action="create.py">
+        <label class="heading"><b>Sign Up</b></label>
+
+        <div class="row">
+          <div class="col-25">
+            <label for="fname">Firstname</label>
+            <input name="fname" type="text" />
+          </div>
+
+          <div class="col-25">
+            <label for="lname">Lastname</label>
+            <input name="lname" type="text" />
+          </div>
+
+          <div class="col-25">
+            <label for="age">Age</label>
+            <input name="age" type="number" />
+          </div>
+
+          <div class="col-25">
+            <label for="polAffil">Political Affiliation</label>
+            <select id="polAffli" name="polaffil">
+              <option value=""></option>
+              <option value="Democrat">Democrat</option>
+              <option value="Independent">Independent</option>
+              <option value="Republican">Republican</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-25">
+            <label for="addr">Address</label>
+            <input name="addr" type="text" />
+          </div>
+
+          <div class="col-25">
+            <label for="cty">City</label>
+            <input name="cty" type="text" />
+          </div>
+
+          <div class="col-25">
+            <label for="st">State</label>
+            <select id="st" name="st">
+              <option value=""></option>
+            </select>
+          </div>
+
+          <div class="col-25">
+            <label for="zip">Zip Code</label>
+            <input name="zip" type="number" />
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-75">
+            <label for="email">Email Address</label>
+            <input name="email" type="email" />
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-25">
+            <label for="uname">Username</label>
+            <input
+              name="uname"
+              type="text"
+              title="Note: all whitespace characters (such as spaces) will be removed"
+            />
+          </div>
+
+          <div class="col-25">
+            <label for="psw1">Password</label>
+            <input
+              name="psw1"
+              type="password"
+              title="Note: all whitespace characters (such as spaces) will be removed"
+            />
+          </div>
+
+          <div class="col-25">
+            <label for="psw2">Re-enter Password</label>
+            <input
+              name="psw2"
+              type="password"
+              title="Note: all whitespace characters (such as spaces) will be removed"
+            />
+          </div>
+        </div>
+
+        <input
+          type="submit"
+          value="Sign Up"
+          title="Note: if you are taken back to the Login page, then your account was created"
+        />
+
+        <div class="separate">
+          <button class="cancel">
+            <a href="login.html" title="Cancel">Cancel</a>
+          </button>
+        </div>
+      </form>
+    </div>
+  </body>
+</html>

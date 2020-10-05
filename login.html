@@ -1,13 +1,13 @@
-<!DOCTYPE html5>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <title>Login</title>
-    <link rel="stylesheet" href="css/login.css" />
+    <link rel="stylesheet" href="css/main-styles.css" />
   </head>
   <body>
     <div id="container">
       <form name="login" method="post" action="login.py">
-        <label><b>Login</b></label>
+        <label class="heading"><b>Login</b></label>
         <label for="uname"><b>Username</b></label
         ><br /><br />
         <input
@@ -23,6 +23,7 @@
           name="psw"
           type="password"
           placeholder="Enter Password"
+          title="Note: all whitespace characters (such as spaces) will be removed"
         /><br /><br />
         <input type="submit" value="Login" /><br /><br />
 

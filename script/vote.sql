@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS accounts (
 -- Creates the table that is used to store votes
 CREATE TABLE IF NOT EXISTS votes (
 	voteId INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-	accId INT UNSIGNED, 
+	accId INT UNSIGNED,
 	FOREIGN KEY(accId) REFERENCES accounts(accId),
 	candidate VARCHAR(50) NOT NULL,	-- who a user voted for
 	polParty VARCHAR(11) NOT NULL	-- the party that the candidate is part of
@@ -33,11 +33,20 @@ CREATE TABLE IF NOT EXISTS votes (
 -- Creates the table that is used to store donations and other related information 
 CREATE TABLE IF NOT EXISTS donations (
 	donatId INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-	accId INT UNSIGNED, 
+	accId INT UNSIGNED,
 	FOREIGN KEY(accId) REFERENCES accounts(accId),
-	amount DEC(6,2) NOT NULL CHECK (amount <= 200),	-- the amount of the donation that was made
+	amount DEC(6,2) NOT NULL CHECK (amount <= 9999.99),	-- the amount of the donation that was made
 	credCardNum VARCHAR(56) NOT NULL,	-- will be encrypted in the database
 	cvv VARCHAR(56) NOT NULL,	-- VARCHAR() used because it will be encrypted in the database
 	credExpMon VARCHAR(9) NOT NULL,	-- the credit card's expiration month
 	creditExpYr YEAR NOT NULL	-- the credit card's expiration year
+) ENGINE = innoDB;
+
+/* Salt Table */
+-- Creates the table that is used to contains the salt for encrypting data
+CREATE TABLE IF NOT EXISTS salt (
+	salId INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+	accId INT UNSIGNED,
+	FOREIGN KEY(accId) REFERENCES accounts(accId),
+	salt VARCHAR(255)
 ) ENGINE = innoDB;

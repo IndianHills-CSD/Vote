@@ -1,0 +1,208 @@
+/* Global Styles */
+
+* {
+    box-sizing: border-box;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+html {
+    background: linear-gradient( to right, rgba(167, 167, 209, 0.7), rgba(255, 255, 255, 0.9), rgba(178, 34, 52, 0.5));
+    background-size: 100% 100%;
+    margin: 0;
+}
+
+:focus {
+    outline: none;
+}
+
+a {
+    color: #fff;
+    text-decoration: none;
+    padding: 3px;
+}
+
+a:hover,
+a:focus,
+a:active {
+    border-radius: 25%;
+    background-color: #b22234;
+}
+
+#container {
+    color: #fff;
+    position: fixed;
+    top: 0.5em;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+form,
+#content {
+    background-color: #3c3b6e;
+    border: #b22234 5px solid;
+}
+
+
+/* login.html & create.html Styles */
+
+label {
+    margin-bottom: 5px;
+    font-size: 1.3em;
+    display: inline-block;
+}
+
+label.heading {
+    text-align: center;
+    font-size: 2em;
+    display: block;
+    margin-bottom: 20px;
+}
+
+input:not([type="submit"]),
+select {
+    width: 100%;
+    font-size: 1.1em;
+    border: 2px solid #f5f5f5;
+    display: inline-block;
+}
+
+input:not([type="submit"]):hover,
+select:hover,
+input:not([type="submit"]):focus,
+select:focus {
+    border-color: #0080ff;
+}
+
+input[type="submit"],
+.cancel {
+    width: 100%;
+    background-color: #b22234;
+    border: 2px solid #871a27;
+    color: #fff;
+    font-size: 1.2em;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+input[type="submit"]:hover,
+.cancel:hover,
+input[type="submit"]:focus,
+.cancel:focus {
+    opacity: 0.8;
+}
+
+
+/* login.html Styles */
+
+form[name="login"] {
+    padding: 25px;
+}
+
+form[name="login"] input[type="text"],
+form[name="login"] input[type="password"] {
+    padding: 15px 17px;
+}
+
+form[name="login"] input[type="text"] {
+    margin-bottom: 15px;
+}
+
+form[name="login"] input[type="password"] {
+    margin-bottom: 25px;
+}
+
+form[name="login"] input[type="submit"] {
+    padding: 15px;
+}
+
+form[name="login"] .separate {
+    padding: 8px;
+}
+
+
+/* login.py, create.py, donation.py, & vote.py Styles */
+
+#content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+}
+
+#content h1 {
+    margin-top: 0;
+}
+
+#content p {
+    margin: 5px 0;
+}
+
+#content a {
+    margin-top: 10px;
+}
+
+
+/* create.html Styles */
+
+.row {
+    display: flex;
+    flex-flow: wrap;
+    margin: 0 -16px;
+}
+
+.col-25 {
+    flex: 25%;
+}
+
+.col-50 {
+    flex: 50%;
+}
+
+.col-75 {
+    flex: 75%;
+}
+
+.col-25,
+.col-50,
+.col-75 {
+    padding: 0 16px;
+}
+
+form[name="signup"] {
+    padding: 15px;
+    width: 90%;
+    font-size: 0.8em;
+}
+
+form[name="signup"] input:not([type="submit"]),
+select {
+    padding: 10px 12px;
+}
+
+form[name="signup"] input,
+select {
+    margin: 10px 0;
+}
+
+form[name="signup"] input[type="submit"] {
+    padding: 10px;
+}
+
+select,
+.cancel {
+    cursor: pointer;
+}
+
+form[name="signup"] .separate {
+    padding: 4px;
+}
+
+.cancel {
+    padding: 5px 9px;
+    width: auto;
+}
