@@ -17,7 +17,7 @@ mons.forEach(printMons);
 
 /**
  * Creates an option tag for each month in the array
- * 
+ *
  * @param mon represents each month in the array of months
  */
 function printMons(mon) {
@@ -30,7 +30,7 @@ function printMons(mon) {
 }
 
 /**
- * 
+ * Formats the numeric values in the amount input field to two decimal places
  */
 function decimals() {
     const amt = document.querySelector("input[name=amt]");
