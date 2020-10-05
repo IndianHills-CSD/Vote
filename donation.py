@@ -122,7 +122,7 @@ print("Content-Type: text/html\n")
 
 if errctr == 0:
     # Printed when a valid donation was placed
-    print("<!DOCTYPE html5>")
+    print("<!DOCTYPE html>")
     print('<html lang="en">')
     print("  <head>")
     print("    <title>Donation</title>")
