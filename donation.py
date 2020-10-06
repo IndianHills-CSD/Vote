@@ -83,7 +83,7 @@ errctr = 0  # keeps track of all errors
 form = cgi.FieldStorage()
 
 # Account Validation
-if not "uname" in form and not "psw" in form:
+if not "uname" in form or not "psw" in form:
     errctr += 1
     errmsgs.append("        <p>No account was entered</p>")
 
