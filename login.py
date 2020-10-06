@@ -73,9 +73,8 @@ def verify_account(uname, psw):
             "        <p>The account that was entered doesn't exist, please consider creating an account</p>"
         )
     else:
-        if result[0] != uname:
-            salt = eval(find_salt(cursor))
-            enc.verify_hash(result[0], psw, salt)
+        salt = eval(find_salt(cursor))
+        enc.verify_hash(result[0], psw, salt)
 
     return errors
 
