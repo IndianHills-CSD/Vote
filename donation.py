@@ -139,7 +139,7 @@ if errctr == 0:
     print("  </body>")
     print("</html>")
 else:
-    # Printed when invalid donations are entered
+    # Printed when invalid donation information is entered
     print("<!DOCTYPE html>")
     print('<html lang="en">')
     print("  <head>")

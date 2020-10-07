@@ -1,6 +1,6 @@
 import hashlib, os
 
-# Custom Python module for encrypting data
+# Custom Python module/library for encrypting data
 
 
 def create_hash(data, salt):
