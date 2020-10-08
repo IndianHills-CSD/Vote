@@ -33,9 +33,9 @@ def valid_age(age):
     if not age.isdigit():
         errors += 1
         errmsgs.append("        <p>Age was not entered</p>")
-    elif int(age) < 18 or int(age) > 127:
+    elif int(age) < 18 or int(age) > 120:
         errors += 1
-        errmsgs.append("         <p>Age should be between 18 and 127</p>")
+        errmsgs.append("         <p>Age should be between 18 and 120</p>")
 
     return errors
 
@@ -125,7 +125,7 @@ def valid_account(uname, psw1, psw2):
     """
     global errmsgs
     errors = 0  # keeps track of all errors
-    valPsws = True  # determines if psw1 and psw2 should be checked for equality
+    val_psws = True  # determines if psw1 and psw2 should be checked for equality
 
     try:
         # Username validation
@@ -166,9 +166,9 @@ def valid_account(uname, psw1, psw2):
             errmsgs.append(
                 "        <p>Password should be at least 8 characters long, contain no whitespace characters, and contain at least 1 digit</p>"
             )
-            valPsws = False
+            val_psws = False
 
-        if valPsws:
+        if val_psws:
             if psw1.strip() != psw2.strip():
                 errors += 1
                 errmsgs.append(
@@ -183,18 +183,18 @@ def valid_account(uname, psw1, psw2):
 
 def select_account(uname, addr):
     """
-    Checks if a users account needs to be inserted into the Accounts table
+    Checks if an account that was entered is in the Accounts table
     """
-    global cursor, errmsgs
+    global errmsgs, cursor
     errors = 0
 
-    # SELECT statement
-    select = "SELECT * FROM accounts WHERE uname = '%s' AND addr = '%s'"
-    values = (uname, addr)
+    # Prepare SELECT statement
+    prep_select = "SELECT * FROM accounts WHERE uname = %s AND addr = %s"
 
-    cursor.execute(select, values)
+    # A tuple should always be used when binding placeholders (%s)
+    cursor.execute(prep_select, (uname, addr))
 
-    result = cursor.fetchall()
+    result = cursor.fetchall()  # returns a list of tuples
 
     if not result:
         insert_account()
@@ -202,15 +202,17 @@ def select_account(uname, addr):
         errors += 1
         errmsgs.append("        <p>Account already exists</p>")
 
+    return errors
+
 
 def insert_account():
     """
     Inserts a users account into the Accounts table using the prepare statement
     """
-    global uname, psw1, fname, lname, email, age, addr, cty, st, zipcode, polaffil, cursor
+    global cursor
 
     # Generates a random number of bytes to be used to create a new hash
-    salt = os.urandom(60)
+    salt = os.urandom(64)
 
     # Encrypts the password and email that was entered
     enc_psw = enc.create_hash(psw1, salt)
@@ -218,7 +220,7 @@ def insert_account():
 
     try:
         # Prepare Statement
-        prep = "INSERT INTO accounts (uname, psw, fname, lname, email, age, addr, city, state, zipCode, poliAffil) VALUES ('%s', '%s', '%s', '%s', '%s', %s, '%s', '%s', '%s', %s, '%s')"
+        prep_insert = "INSERT INTO accounts (uname, pwd, fname, lname, email, age, addr, city, state, zipCode, poliAffil) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
         values = (
             uname,
             enc_psw,
@@ -233,52 +235,58 @@ def insert_account():
             polaffil,
         )
 
-        cursor.execute(prep, values)
-        print("<script>alert('The account was created')</script>")
-
-        store_salt(salt)
+        cursor.execute(prep_insert, values)
 
         db.commit()  # saves changes
 
+        # Stores salt in the database
+        store_salt(salt)
+
     except mysql.Error as e:
-        print("<script>console.log('", e, "');</script>")
+        msg = "        <p>", e, "</p>"
+        errmsgs.append(msg)
 
 
 def store_salt(salt):
     """
     Stores the salt used to encrypt data in the database using the prepare statement
     """
-    global cursor
+    global cursor, db
 
     try:
+        # Gets the ID
         accid = find_accid()
 
-        # Prepare statement
-        prep = "INSERT INTO salt (accId, salt) VALUES (%s, %s)"
-        values = (accid, salt)
+        # Prepare INSERT statement
+        prep_insert = "INSERT INTO salt (accId, salt) VALUES (%s, %s)"
 
-        cursor.execute(prep, values)
-        print("<script>console.log('Salt was saved');</script>")
+        cursor.execute(prep_insert, (accid, str(salt)))
+
+        db.commit()  # saves changes
 
     except mysql.Error as e:
-        print("<script>console.log('", e, "');</script>")
+        msg = "        <p>", e, "</p>"
+        errmsgs.append(msg)
 
 
 def find_accid():
     """
     Finds the id of an account in the Salt table
     """
-    global cursor, uname
+    global cursor
     accid = 0
 
-    # SELECT statement
-    select = "SELECT accId FROM accounts WHERE uname = %s"
+    # Prepare SELECT statement
+    prep_select = "SELECT accId FROM accounts WHERE uname = %s"
 
-    cursor.execute(select, uname)
-    result = cursor.fetchall()
+    # A tuple should always be used to bind placeholders
+    cursor.execute(prep_select, (uname,))
+    result = cursor.fetchall()  # returns a list of tuples
 
     if result:
-        accid = int(result[0])
+        # Should only return one row
+        (val_accid,) = result[0]  # unpacks the tuple
+        accid = val_accid
 
     return accid
 
@@ -374,8 +382,10 @@ else:
 
 errctr += valid_account(uname, psw1, psw2)
 
-# Checks if the account that was entered is already exists
-# errctr += select_account(uname, addr)
+# Determines if select_account() should be called
+if errctr == 0:
+    # Checks if the account that was entered is already exists
+    errctr += select_account(uname, addr)
 
 print("Content-Type: text/html")
 
@@ -385,7 +395,7 @@ if errctr == 0:
     print()
 
     # For when the page is still redirecting
-    print("<!DOCTYPE html5>")
+    print("<!DOCTYPE html>")
     print('<html lang="en">')
     print("  <head>")
     print("    <title>Create Account</title>")

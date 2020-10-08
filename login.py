@@ -43,8 +43,8 @@ def valid_account(uname, psw):
         errmsgs.append("        <p>Password was not entered</p>")
 
     # Calls verify_account() when no errors occur
-    #   if errors == 0:
-    #      errors += verify_account(uname, psw)
+    if errors == 0:
+        errors += verify_account(uname, psw)
 
     return errors
 
@@ -53,68 +53,78 @@ def verify_account(uname, psw):
     """
     Verifies that an account exists by searching for it in the database
     """
-    global errmsgs, db
+    global errmsgs
     errors = 0
 
-    cursor = db.cursor(prepared=True)
+    # Prepare SELECT statement
+    prep_select = "SELECT pwd FROM accounts WHERE uname = %s"
 
-    # SELECT statement
-    select = "SELECT psw FROM accounts WHERE uname = '%s'"
-
-    cursor.execute(select, uname)
+    # A touple should always be used for binding placeholders (%s)
+    cursor.execute(
+        prep_select, (uname,)  # you write (var,) when searching for one value
+    )
 
     # Gets all the rows from the results
-    result = cursor.fetchall()
+    result = cursor.fetchall()  # returns a list of tuples
 
     # Checks if no matches were found
     if not result:
         errors += 1
         errmsgs.append(
-            "        <p>The account that was entered doesn't exist, please consider creating an account</p>"
+            "        <p>The username that was entered doesn't exist, please consider creating an account</p>"
         )
     else:
-        if result[0] != uname:
-            salt = eval(find_salt(cursor))
-            enc.verify_hash(result[0], psw, salt)
+        # Converts the string value that is returned in find_salt() back to binary
+        salt = eval(find_salt())
+
+        (hashed_psw,) = result[0]  # unpacks the tuple
+
+        if not enc.verify_hash(hashed_psw, psw, salt):
+            errors += 1
+            msg = "        <p>The password that was entered is not correct for the username that was entered</p>"
+            errmsgs.append(msg)
 
     return errors
 
 
-def find_salt(cursor):
+def find_salt():
     """
     Determines which salt to use for verifying passwords
     """
-    salt = ""
+    global cursor
+    salt = ""  # returns nothing if invalid
 
-    # SELECT statement
-    select = "SELECT salt FROM accounts NATURAL JOIN salt WHERE accId = %s"
+    # Prepare SELECT statement
+    prep_select = "SELECT salt FROM accounts NATURAL JOIN salt WHERE accId = %s"
 
-    accid = find_accid(cursor)
+    accid = find_accid()
 
-    cursor.execute(select, accid)
-    result = cursor.fetchall()
+    cursor.execute(prep_select, (accid,))
+    result = cursor.fetchall()  # returns a list of tuples
 
     if result:
-        salt = str(result[0])
+        (val_salt,) = result[0]  # unpacks the tuple
+        salt = val_salt
 
     return salt
 
 
-def find_accid(cursor):
+def find_accid():
     """
     Finds the id of an account in the Salt table
     """
-    global uname
+    global cursor
     accid = 0
 
-    # SELECT statement
-    select = "SELECT accId FROM accounts WHERE uname = %s"
+    # Prepare SELECT statement
+    prep_select = "SELECT accId FROM accounts WHERE uname = %s"
 
-    cursor.execute(select, uname)
-    result = cursor.fetchall()
+    cursor.execute(prep_select, (uname,))
+    result = cursor.fetchall()  # returns a list of tuples
 
     if result:
-        accid = int(result[0])
+        (val_id,) = result[0]  # unpacks the tuple
+        accid = int(val_id)
 
     return accid
 
@@ -124,6 +134,9 @@ cgitb.enable()  # for debugging
 # Connects to the database
 db = connect_db()
 
+cursor = db.cursor(prepared=True)  # allows us to use prepare statements
+
+
 # Intializes an empty list of error messages
 errmsgs = []
 errctr = 0  # keeps track of all the errors that have occurred
@@ -131,16 +144,15 @@ errctr = 0  # keeps track of all the errors that have occurred
 form = cgi.FieldStorage()
 
 # Username and Password Validation
-if "uname" in form and "psw" in form:
-    uname = form.getvalue("uname")
-    psw = form.getvalue("psw")
+if "uname" not in form:
+    uname = ""
 else:
-    if "uname" not in form:
-        uname = ""
-        psw = form.getvalue("psw")
-    if "psw" not in form:
-        uname = form.getvalue("uname")
-        psw = ""
+    uname = form.getvalue("uname")
+
+if "psw" not in form:
+    psw = ""
+else:
+    psw = form.getvalue("psw")
 
 errctr += valid_account(uname, psw)
 

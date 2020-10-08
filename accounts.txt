@@ -1,0 +1,11 @@
+Notes: 
+- This file is used to contain the username, password, email, and address of some users
+- NONE of the Python files save accounts to this file
+- This file is ONLY included for testing purposes
+
+Account 1:
+- username: user
+- password: passw0rd
+- email: example@gmail.com
+
+Account 2:

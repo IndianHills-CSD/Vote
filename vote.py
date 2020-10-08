@@ -32,6 +32,8 @@ def valid_vote(party, can):
     return errors
 
 
+# MySQL database processing code here
+
 # Intializes an empty list of error messages
 errmsgs = []
 
@@ -75,7 +77,7 @@ if errctr == 0:
     print("  </body>")
     print("</html>")
 else:
-    # Printed when invalid usernames and/or passwords are entered
+    # Printed when invalid data is entered
     print("<!DOCTYPE html>")
     print('<html lang="en">')
     print("  <head>")

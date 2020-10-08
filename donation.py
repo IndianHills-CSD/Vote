@@ -83,7 +83,7 @@ errctr = 0  # keeps track of all errors
 form = cgi.FieldStorage()
 
 # Account Validation
-if not "uname" in form and not "psw" in form:
+if not "uname" in form or not "psw" in form:
     errctr += 1
     errmsgs.append("        <p>No account was entered</p>")
 
@@ -139,7 +139,7 @@ if errctr == 0:
     print("  </body>")
     print("</html>")
 else:
-    # Printed when invalid donations are entered
+    # Printed when invalid donation information is entered
     print("<!DOCTYPE html>")
     print('<html lang="en">')
     print("  <head>")

@@ -1,7 +1,7 @@
-import mysql.connector, sys
+import mysql.connector as mysql, sys
 from mysql.connector import Error
 
-# Custom Python module for connecting to the "Vote" database
+# Custom Python module/library for connecting to the "Vote" database
 
 
 def connect_db():
@@ -9,7 +9,7 @@ def connect_db():
     Connects to the "Vote" database
     """
     try:
-        conn = mysql.connector.connect(
+        conn = mysql.connect(
             host="localhost",
             user="root",
             password="",
