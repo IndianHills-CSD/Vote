@@ -59,7 +59,7 @@ def verify_account(uname, psw):
     # Prepare SELECT statement
     prep_select = "SELECT pwd FROM accounts WHERE uname = %s"
 
-    # A touple should always be used for binding placeholders (%s)
+    # A tuple should always be used for binding placeholders (%s)
     cursor.execute(
         prep_select, (uname,)  # you write (var,) when searching for one value
     )
