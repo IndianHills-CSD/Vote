@@ -6,6 +6,14 @@ Notes:
 Account 1:
 - username: user
 - password: passw0rd
+- firstname: Lucas
+- lastname: Chapman
 - email: example@gmail.com
+- age: 19
+- address: 123 Easy Street
+- city: Iowa City
+- state: Iowa
+- zip code: 54321
+- political affiliation: Democrat
 
 Account 2:
