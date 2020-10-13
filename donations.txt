@@ -1,0 +1,26 @@
+Notes: 
+- This file is used to contain the donations that have been accepted
+- This file is ONLY included for testing purposes
+
+Donation 1:
+- Username: user
+- Password: passw0rd
+- Candidate: Candi Date
+- Amount: $19.01
+- Credit Card Number: 1234-12345-12345
+- CVV: 123
+- Exp. Month: July
+- Exp. Year: 2021
+- Bitcoin: None
+
+Donation 2:
+- Username: username
+- Password: pa33w0rd
+- Candidate: John Green
+- Amount: $20.20
+- Credit Card Number: None
+- CVV: None
+- Exp. Month: None
+- Exp. Year: None
+- Bitcoin: 
+

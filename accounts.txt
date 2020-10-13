@@ -1,5 +1,5 @@
 Notes: 
-- This file is used to contain the username, password, email, and address of some users
+- This file is used to contain the accounts of some users
 - NONE of the Python files save accounts to this file
 - This file is ONLY included for testing purposes
 
@@ -17,3 +17,16 @@ Account 1:
 - political affiliation: Democrat
 
 Account 2:
+- username: username
+- password: pa33w0rd
+- firstname: John
+- lastname: Smith
+- email: email@gmail.com
+- age: 38
+- address: 123 North Street
+- city: Minneapolis
+- state: Minnesota
+- zip code: 12345
+- political affiliation: Independent
+
+Account 3:

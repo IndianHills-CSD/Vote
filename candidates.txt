@@ -1,0 +1,13 @@
+Notes: 
+- This file is used to contain the candidates that have been entered
+- This file is ONLY included for testing purposes
+
+Candidate 1:
+- Candidate: Candi Date
+- Political Party: Democrat
+
+Candidate 2:
+- Candidate: John Green
+- Political Party: Green Party
+
+Candidate 3:
