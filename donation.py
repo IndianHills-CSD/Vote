@@ -101,6 +101,7 @@ def find_accid():
     """
     Finds the id of an account for the Salt and Donations tables
     """
+    global uname
     accid = 0
 
     # Prepare SELECT statement
@@ -355,6 +356,10 @@ if bitcoin == "":
 else:
     errctr += valid_bitcoin(bitcoin)
 
+# Checks if any errors have occured up to this point
+if errctr == 0:
+    insert_donation()
+
 print("Content-Type: text/html\n")
 
 # HTML code that is always printed
@@ -367,8 +372,6 @@ print("  </head>")
 print("  <body>")
 print('    <div id="container">')
 print('      <div id="content">')
-
-insert_donation()
 
 # Checks if any errors occured
 if errctr == 0:
