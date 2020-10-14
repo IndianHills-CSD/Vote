@@ -42,7 +42,6 @@ def valid_pol_affil(polaffil):
     """
     Checks if a valid political affiliation was selected
     """
-    global errmsgs
     errors = 0
 
     if len(polaffil.strip()) == 0:
@@ -56,7 +55,6 @@ def valid_address(addr, cty, st, zip):
     """
     Checks if a valid address, city, zip code was entered and checks if a valid state was selected
     """
-    global errmsgs
     errors = 0
     # Regex Pattern for Addresses
     addrformat = re.search(
@@ -129,9 +127,7 @@ def valid_account(uname, psw1, psw2):
         errmsgs.append("        <p>Username was not entered</p>")
     elif len(uname.strip()) < 4:
         errors += 1
-        errmsgs.append(
-            "        <p>Username should be at least 4 characters long</p>"
-        )
+        errmsgs.append("        <p>Username should be at least 4 characters long</p>")
 
     # Password validation
     wschar = re.search("\s{1,}", psw1)  # checks for any whitespace characters
@@ -158,7 +154,7 @@ def valid_account(uname, psw1, psw2):
             "        <p>Password should be at least 8 characters long, contain no whitespace characters, and contain at least 1 digit</p>"
         )
         val_psws = False
-        
+
     if val_psws:
         if psw1.strip() != psw2.strip():
             errors += 1
@@ -175,19 +171,25 @@ def select_account(uname, addr):
     """
     errors = 0
 
-    # Prepare SELECT statement
-    prep_select = "SELECT * FROM accounts WHERE uname = %s AND addr = %s"
+    try:
+        # Prepare SELECT statement
+        prep_select = "SELECT * FROM accounts WHERE uname = %s AND addr = %s"
 
-    # A tuple should always be used when binding placeholders (%s)
-    cursor.execute(prep_select, (uname, addr))
+        # A tuple should always be used when binding placeholders (%s)
+        cursor.execute(prep_select, (uname, addr))
 
-    result = cursor.fetchall()  # returns a list of tuples
+        result = cursor.fetchall()  # returns a list of tuples
 
-    if not result:
-        insert_account()
-    else:
-        errors += 1
-        errmsgs.append("        <p>Account already exists</p>")
+        if not result:
+            insert_account()
+        else:
+            errors += 1
+            errmsgs.append("        <p>Account already exists</p>")
+    
+    except mysql.Error as e:
+        errctr += 1
+        msg = "        <p>" + str(e) + "</p>"
+        errmsgs.append(msg)
 
     return errors
 
@@ -203,55 +205,43 @@ def insert_account():
     enc_psw = enc.create_hash(psw1, salt)
     enc_email = enc.create_hash(email, salt)
 
-    try:
-        # Prepare INSERT Statement
-        prep_insert = "INSERT INTO accounts (uname, pwd, fname, lname, email, age, addr, city, state, zipCode, poliAffil) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-        values = (
-            uname,
-            enc_psw,
-            fname,
-            lname,
-            enc_email,
-            age,
-            addr,
-            cty,
-            st,
-            zipcode,
-            polaffil,
-        )
+    # Prepare INSERT Statement
+    prep_insert = "INSERT INTO accounts (uname, pwd, fname, lname, email, age, addr, city, state, zipCode, poliAffil) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+    values = (
+        uname,
+        enc_psw,
+        fname,
+        lname,
+        enc_email,
+        age,
+        addr,
+        cty,
+        st,
+        zipcode,
+        polaffil,
+    )
 
-        cursor.execute(prep_insert, values)
+    cursor.execute(prep_insert, values)
 
-        db.commit()  # saves changes
+    db.commit()  # saves changes
 
-        # Stores salt in the database
-        store_salt(salt)
-
-    except mysql.Error as e:
-        errctr += 1
-        msg = "        <p>" + e + "</p>"
-        errmsgs.append(msg)
+    # Stores salt in the database
+    store_salt(salt)
 
 
 def store_salt(salt):
     """
     Stores the salt used to encrypt data in the database using the prepare statement
     """
-    try:
-        # Gets the ID
-        accid = find_accid()
+    # Gets the ID
+    accid = find_accid()
 
-        # Prepare INSERT statement
-        prep_insert = "INSERT INTO salt (accId, salt) VALUES (%s, %s)"
+    # Prepare INSERT statement
+    prep_insert = "INSERT INTO salt (accId, salt) VALUES (%s, %s)"
 
-        cursor.execute(prep_insert, (accid, str(salt)))
+    cursor.execute(prep_insert, (accid, str(salt)))
 
-        db.commit()  # saves changes
-
-    except mysql.Error as e:
-        errctr += 1
-        msg = "        <p>" + e + "</p>"
-        errmsgs.append(msg)
+    db.commit()  # saves changes
 
 
 def find_accid():
@@ -392,10 +382,6 @@ if errctr == 0:
     print(
         '          <a href="login.html">Click here if you are still being redirected</a>'
     )
-    print("      </div>")
-    print("    </div>")
-    print("  </body>")
-    print("</html>")
 else:
     # Printed when invalid account information is entered
     print()  # adds a blank line since a blank line needs to follow the Content-Type
@@ -415,7 +401,8 @@ else:
         print(errmsgs[i])
 
     print('        <a href="create.html">Click here to fix your mistakes</a>')
-    print("      </div>")
-    print("    </div>")
-    print("  </body>")
-    print("</html>")
+
+print("      </div>")
+print("    </div>")
+print("  </body>")
+print("</html>")
