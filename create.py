@@ -8,7 +8,6 @@ def valid_name(fname, lname):
     """
     Checks if a valid firstname and lastname was entered
     """
-    global errmsgs
     errors = 0
 
     if len(fname.strip()) == 0 or len(lname.strip()) == 0:
@@ -27,7 +26,6 @@ def valid_age(age):
     """
     Checks if a valid age was entered
     """
-    global errmsgs
     errors = 0
 
     if not age.isdigit():
@@ -44,7 +42,6 @@ def valid_pol_affil(polaffil):
     """
     Checks if a valid political affiliation was selected
     """
-    global errmsgs
     errors = 0
 
     if len(polaffil.strip()) == 0:
@@ -58,7 +55,6 @@ def valid_address(addr, cty, st, zip):
     """
     Checks if a valid address, city, zip code was entered and checks if a valid state was selected
     """
-    global errmsgs
     errors = 0
     # Regex Pattern for Addresses
     addrformat = re.search(
@@ -102,7 +98,6 @@ def valid_email(email):
     """
     Checks if a valid email was entered
     """
-    global errmsgs
     errors = 0
     # Regex Pattern for Emails
     emailformat = re.search("^([\S]{1,}[@][\w]{4,}[\.][a-z]{2,4})$", email)
@@ -123,60 +118,49 @@ def valid_account(uname, psw1, psw2):
     Checks if a valid username and password was entered and checks if the same password was
     re-entered
     """
-    global errmsgs
     errors = 0  # keeps track of all errors
     val_psws = True  # determines if psw1 and psw2 should be checked for equality
 
-    try:
-        # Username validation
-        if len(uname.strip()) == 0:
-            errors += 1
-            errmsgs.append("        <p>Username was not entered</p>")
-        elif len(uname.strip()) < 4:
-            errors += 1
-            errmsgs.append(
-                "        <p>Username should be at least 4 characters long</p>"
-            )
-    except AttributeError:
+    # Username validation
+    if len(uname.strip()) == 0:
         errors += 1
         errmsgs.append("        <p>Username was not entered</p>")
-
-    try:
-        wschar = re.search("\s{1,}", psw1)  # checks for any whitespace characters
-        digits = re.search("\d{1,}", psw1)  # checks for 1 or more digits
-        wschar2 = re.search("\s{1,}", psw2)  # checks for any whitespace characters
-        digits2 = re.search("\d{1,}", psw2)  # checks for 1 or more digits
-
-        # Password validation
-        if len(psw1.strip()) == 0 or len(psw2.strip()) == 0:
-            errors += 1
-            errmsgs.append(
-                "        <p>Password was either not entered at all or not re-entered</p>"
-            )
-            valPsws = False
-        elif (
-            len(psw1.strip()) < 8
-            or wschar
-            or not digits
-            or len(psw2.strip()) < 8
-            or wschar2
-            or not digits2
-        ):
-            errors += 1
-            errmsgs.append(
-                "        <p>Password should be at least 8 characters long, contain no whitespace characters, and contain at least 1 digit</p>"
-            )
-            val_psws = False
-
-        if val_psws:
-            if psw1.strip() != psw2.strip():
-                errors += 1
-                errmsgs.append(
-                    "        <p>The password that was re-entered does not match the original password that was entered</p>"
-                )
-    except AttributeError:
+    elif len(uname.strip()) < 4:
         errors += 1
-        errmsgs.append("        <p>Password was not entered</p>")
+        errmsgs.append("        <p>Username should be at least 4 characters long</p>")
+
+    # Password validation
+    wschar = re.search("\s{1,}", psw1)  # checks for any whitespace characters
+    digits = re.search("\d{1,}", psw1)  # checks for 1 or more digits
+    wschar2 = re.search("\s{1,}", psw2)  # checks for any whitespace characters
+    digits2 = re.search("\d{1,}", psw2)  # checks for 1 or more digits
+
+    if len(psw1.strip()) == 0 or len(psw2.strip()) == 0:
+        errors += 1
+        errmsgs.append(
+            "        <p>Password was either not entered at all or not re-entered</p>"
+        )
+        valPsws = False
+    elif (
+        len(psw1.strip()) < 8
+        or wschar
+        or not digits
+        or len(psw2.strip()) < 8
+        or wschar2
+        or not digits2
+    ):
+        errors += 1
+        errmsgs.append(
+            "        <p>Password should be at least 8 characters long, contain no whitespace characters, and contain at least 1 digit</p>"
+        )
+        val_psws = False
+
+    if val_psws:
+        if psw1.strip() != psw2.strip():
+            errors += 1
+            errmsgs.append(
+                "        <p>The password that was re-entered does not match the original password that was entered</p>"
+            )
 
     return errors
 
@@ -185,32 +169,35 @@ def select_account(uname, addr):
     """
     Checks if an account that was entered is in the Accounts table
     """
-    global errmsgs, cursor
     errors = 0
 
-    # Prepare SELECT statement
-    prep_select = "SELECT * FROM accounts WHERE uname = %s AND addr = %s"
+    try:
+        # Prepare SELECT statement
+        prep_select = "SELECT * FROM accounts WHERE uname = %s AND addr = %s"
 
-    # A tuple should always be used when binding placeholders (%s)
-    cursor.execute(prep_select, (uname, addr))
+        # A tuple should always be used when binding placeholders (%s)
+        cursor.execute(prep_select, (uname, addr))
 
-    result = cursor.fetchall()  # returns a list of tuples
+        result = cursor.fetchall()  # returns a list of tuples
 
-    if not result:
-        insert_account()
-    else:
-        errors += 1
-        errmsgs.append("        <p>Account already exists</p>")
+        if not result:
+            insert_account()
+        else:
+            errors += 1
+            errmsgs.append("        <p>Account already exists</p>")
+    
+    except mysql.Error as e:
+        errctr += 1
+        msg = "        <p>" + str(e) + "</p>"
+        errmsgs.append(msg)
 
     return errors
 
 
 def insert_account():
     """
-    Inserts a users account into the Accounts table using the prepare statement
+    Stores a user's account into the Accounts table using the prepare statement
     """
-    global cursor
-
     # Generates a random number of bytes to be used to create a new hash
     salt = os.urandom(64)
 
@@ -218,62 +205,49 @@ def insert_account():
     enc_psw = enc.create_hash(psw1, salt)
     enc_email = enc.create_hash(email, salt)
 
-    try:
-        # Prepare Statement
-        prep_insert = "INSERT INTO accounts (uname, pwd, fname, lname, email, age, addr, city, state, zipCode, poliAffil) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-        values = (
-            uname,
-            enc_psw,
-            fname,
-            lname,
-            enc_email,
-            age,
-            addr,
-            cty,
-            st,
-            zipcode,
-            polaffil,
-        )
+    # Prepare INSERT Statement
+    prep_insert = "INSERT INTO accounts (uname, pwd, fname, lname, email, age, addr, city, state, zipCode, poliAffil) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+    values = (
+        uname,
+        enc_psw,
+        fname,
+        lname,
+        enc_email,
+        age,
+        addr,
+        cty,
+        st,
+        zipcode,
+        polaffil,
+    )
 
-        cursor.execute(prep_insert, values)
+    cursor.execute(prep_insert, values)
 
-        db.commit()  # saves changes
+    db.commit()  # saves changes
 
-        # Stores salt in the database
-        store_salt(salt)
-
-    except mysql.Error as e:
-        msg = "        <p>", e, "</p>"
-        errmsgs.append(msg)
+    # Stores salt in the database
+    store_salt(salt)
 
 
 def store_salt(salt):
     """
     Stores the salt used to encrypt data in the database using the prepare statement
     """
-    global cursor, db
+    # Gets the ID
+    accid = find_accid()
 
-    try:
-        # Gets the ID
-        accid = find_accid()
+    # Prepare INSERT statement
+    prep_insert = "INSERT INTO salt (accId, salt) VALUES (%s, %s)"
 
-        # Prepare INSERT statement
-        prep_insert = "INSERT INTO salt (accId, salt) VALUES (%s, %s)"
+    cursor.execute(prep_insert, (accid, str(salt)))
 
-        cursor.execute(prep_insert, (accid, str(salt)))
-
-        db.commit()  # saves changes
-
-    except mysql.Error as e:
-        msg = "        <p>", e, "</p>"
-        errmsgs.append(msg)
+    db.commit()  # saves changes
 
 
 def find_accid():
     """
-    Finds the id of an account in the Salt table
+    Finds the id of an account for the Salt table
     """
-    global cursor
     accid = 0
 
     # Prepare SELECT statement
@@ -408,10 +382,6 @@ if errctr == 0:
     print(
         '          <a href="login.html">Click here if you are still being redirected</a>'
     )
-    print("      </div>")
-    print("    </div>")
-    print("  </body>")
-    print("</html>")
 else:
     # Printed when invalid account information is entered
     print()  # adds a blank line since a blank line needs to follow the Content-Type
@@ -430,8 +400,9 @@ else:
     for i in range(errctr):
         print(errmsgs[i])
 
-    print('        <a href="create.html">Click here fix your mistakes</a>')
-    print("      </div>")
-    print("    </div>")
-    print("  </body>")
-    print("</html>")
+    print('        <a href="create.html">Click here to fix your mistakes</a>')
+
+print("      </div>")
+print("    </div>")
+print("  </body>")
+print("</html>")

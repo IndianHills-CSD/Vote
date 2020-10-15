@@ -1,6 +1,6 @@
 #! C:\Python38-32\python.exe -u
 
-import cgi, cgitb, re, encryptionlib as enc, os, mysql.connector as mysql
+import cgi, cgitb, re, encryptionlib as enc, os, mysql.connector as mysql, http.cookies as c
 from connectlib import connect_db
 
 
@@ -8,39 +8,28 @@ def valid_account(uname, psw):
     """
     Checks if a valid username and password was entered
     """
-    global errmsgs
     errors = 0
 
-    try:
-        # Username validation
-        if len(uname.strip()) == 0:
-            errors += 1
-            errmsgs.append("        <p>Username was not entered</p>")
-        elif len(uname.strip()) < 4:
-            errors += 1
-            errmsgs.append(
-                "        <p>Username should be at least 4 characters long</p>"
-            )
-    except AttributeError:
+    # Username validation
+    if len(uname.strip()) == 0:
         errors += 1
         errmsgs.append("        <p>Username was not entered</p>")
+    elif len(uname.strip()) < 4:
+        errors += 1
+        errmsgs.append("        <p>Username should be at least 4 characters long</p>")
 
-    try:
-        wschar = re.search("\s{1,}", psw)  # checks for any whitespace characters
-        digits = re.search("\d{1,}", psw)  # checks for 1 or more digits
+    # Password validation
+    wschar = re.search("\s{1,}", psw)  # checks for any whitespace characters
+    digits = re.search("\d{1,}", psw)  # checks for 1 or more digits
 
-        # Password validation
-        if len(psw.strip()) == 0:
-            errors += 1
-            errmsgs.append("        <p>Password was not entered</p>")
-        elif len(psw.strip()) < 8 or wschar or not digits:
-            errors += 1
-            errmsgs.append(
-                "        <p>Password should be at least 8 characters long and contain no whitespace characters and at least 1 digit</p>"
-            )
-    except AttributeError:
+    if len(psw.strip()) == 0:
         errors += 1
         errmsgs.append("        <p>Password was not entered</p>")
+    elif len(psw.strip()) < 8 or wschar or not digits:
+        errors += 1
+        errmsgs.append(
+            "        <p>Password should be at least 8 characters long and contain no whitespace characters and at least 1 digit</p>"
+        )
 
     # Calls verify_account() when no errors occur
     if errors == 0:
@@ -53,13 +42,12 @@ def verify_account(uname, psw):
     """
     Verifies that an account exists by searching for it in the database
     """
-    global errmsgs
     errors = 0
 
     # Prepare SELECT statement
     prep_select = "SELECT pwd FROM accounts WHERE uname = %s"
 
-    # A touple should always be used for binding placeholders (%s)
+    # A tuple should always be used for binding placeholders (%s)
     cursor.execute(
         prep_select, (uname,)  # you write (var,) when searching for one value
     )
@@ -74,15 +62,16 @@ def verify_account(uname, psw):
             "        <p>The username that was entered doesn't exist, please consider creating an account</p>"
         )
     else:
-        # Converts the string value that is returned in find_salt() back to binary
+        # Converts the string value that is returned in find_salt() back to bytes
         salt = eval(find_salt())
 
         (hashed_psw,) = result[0]  # unpacks the tuple
 
         if not enc.verify_hash(hashed_psw, psw, salt):
             errors += 1
-            msg = "        <p>The password that was entered is not correct for the username that was entered</p>"
-            errmsgs.append(msg)
+            errmsgs.append(
+                "        <p>The password that was entered is not correct for the username that was entered</p>"
+            )
 
     return errors
 
@@ -156,8 +145,14 @@ else:
 
 errctr += valid_account(uname, psw)
 
+# Creates a cookie for storing a valid username
+cookies = c.SimpleCookie()
+cookies["uname"] = uname
+print(cookies["uname"])  # prints "Set-Cookie: uname=value"
+
 print("Content-Type: text/html")
 
+# Checks if any errors occured
 if errctr == 0:
     # Sets the new location (URL) to the index.html page
     print("Location: http://localhost/vote-project/index.html")
@@ -177,10 +172,6 @@ if errctr == 0:
     print(
         '        <a href="index.html">Click here if you are still being redirected</a>'
     )
-    print("      </div>")
-    print("    </div>")
-    print("  </body>")
-    print("</html>")
 else:
     # Printed when invalid usernames and/or passwords are entered
     print()  # adds a blank line since a blank line needs to follow the Content-Type
@@ -199,8 +190,10 @@ else:
     for i in range(errctr):
         print(errmsgs[i])
 
-    print('        <a href="login.html">Click here fix your mistakes</a>')
-    print("      </div>")
-    print("    </div>")
-    print("  </body>")
-    print("</html>")
+    print('        <a href="login.html">Click here to fix your mistakes</a>')
+
+# HTML code that is always printed
+print("      </div>")
+print("    </div>")
+print("  </body>")
+print("</html>")

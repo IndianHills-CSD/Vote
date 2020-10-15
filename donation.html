@@ -1,7 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Donations</title>
+    <!-- Font Awesome Script -->
+    <script
+      src="https://kit.fontawesome.com/855ee508c4.js"
+      crossorigin="anonymous"
+    ></script>
+    <!-- Custom Stylesheet -->
     <link rel="stylesheet" href="css/main-pages.css" />
     <script src="js/monthsAndDecimals.js" defer></script>
   </head>
@@ -66,6 +73,46 @@
           <div class="col-25">
             <label for="expy">Expiration Year</label><br />
             <input type="number" name="expy" />
+          </div>
+        </div>
+
+        <!-- Bitcoin button -->
+        <div class="row">
+          <div class="col-75">
+            <a
+              class="bc-btn"
+              onclick="document.getElementById('overlay').style.display = 'block';"
+              ><i class="fab fa-bitcoin"></i> Pay with Bitcoin</a
+            >
+          </div>
+        </div>
+
+        <!-- Bitcoin Modal -->
+        <div id="overlay">
+          <div id="bitcoin">
+            <span
+              class="close-btn"
+              onclick="document.getElementById('overlay').style.display = 'none';"
+              ><i class="fas fa-times"></i
+            ></span>
+            <h2>Scan the QR code or enter your address below</h2>
+            <img src="images/QR-Code-PNG-Picture.png" />
+            <br />
+            <div class="row">
+              <div class="col-75">
+                <label for="recipient">Recipient</label>
+                <input
+                  type="text"
+                  name="recipient"
+                  readonly
+                  value="17wR7WdrmLH6R387xeA3ahYCo91Up9A34T"
+                />
+              </div>
+              <div class="col-75">
+                <label for="sender">Sender</label>
+                <input type="text" name="sender" />
+              </div>
+            </div>
           </div>
         </div>
 
