@@ -30,7 +30,7 @@ def connect_db():
         )
 
         # Displays the error that occured
-        print("    <script>console.log('", e, "')</script>")
+        print("    <script>console.log('" + str(e) + "')</script>")
 
         print("  </body>")
         print("</html>")
