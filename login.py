@@ -125,7 +125,6 @@ db = connect_db()
 
 cursor = db.cursor(prepared=True)  # allows us to use prepare statements
 
-
 # Intializes an empty list of error messages
 errmsgs = []
 errctr = 0  # keeps track of all the errors that have occurred
