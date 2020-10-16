@@ -1,7 +1,8 @@
 #! C:\Python38-32\python.exe -u
 
-import cgi, cgitb, re, encryptionlib as enc, os, mysql.connector as mysql, datetime as date, bitcoinlib as bc
+import cgi, cgitb, re, encryptionlib as enc, os, mysql.connector as mysql, datetime as date
 from connectlib import connect_db
+from bitcoinlib import check_bc
 
 
 def valid_account(uname, psw):
@@ -235,7 +236,7 @@ def valid_bitcoin(bitcoin):
             "        <p>The Bitcoin that was entered should not match the recipient's Bitcoin</p>"
         )
     else:
-        if not bc.check_bc(bitcoin):
+        if not check_bc(bitcoin):
             errors += 1
             errmsgs.append("        <p>The Bitcoin that was entered is invalid</p>")
 
@@ -378,7 +379,7 @@ if errctr == 0:
     # Printed when a valid donation was placed
     print("         <h1>Thank you for donating!</h1>")
     print("         <p>Your donation was accepted!</p>")
-    print('         <a href="index.html">Click here to return to the home page</a>')
+    print('         <a href="index.html">Click here to return to the Home page</a>')
 else:
     # Printed when invalid donation information is entered
     print("        <h1>Error</h1>")
