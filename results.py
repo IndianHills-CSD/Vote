@@ -120,9 +120,9 @@ def ind_votes():
 # Connects to the database
 db = connect_db()
 
-cursor = db.cursor()
+cursor = db.cursor(prepared=True)  # allows the prepare statement to be used
 
-# Intializes an empty list of candidate information, error messages, and HTML code
+# Intializes an empty l ist of candidate information, error messages, and HTML code
 content = []
 select_votes()
 
@@ -132,11 +132,12 @@ print("<!DOCTYPE html>")
 print('<html lang="en">')
 print("  <head>")
 print("    <title>Results</title>")
+print('    <meta name="viewport" content="width=device-width, initial-scale=1.0">')
 print("    <!-- Font Awesome Script -->")
 print("    <script")
 print('      src="https://kit.fontawesome.com/855ee508c4.js"')
 print('      crossorigin="anonymous"')
-print("    ></script>")
+print("    ></script>\n")
 print("    <!-- Bootstrap -->")
 print("    <link")
 print('      rel="stylesheet"')
@@ -148,6 +149,15 @@ print(
 )
 print('      crossorigin="anonymous"')
 print("    />")
+print(
+    '    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>'
+)
+print(
+    '    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>'
+)
+print(
+    '    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>\n'
+)
 print("    <!-- Custom Stylesheet -->")
 print('    <link rel="stylesheet" href="css/main-pages.css" />')
 print("  </head>")
@@ -155,13 +165,47 @@ print("  <body>")
 print("    <header>")
 print("      <!-- Navbar -->")
 print('      <nav class="navbar navbar-expand-sm bg-primary navbar-dark">')
-print('        <div id="acc">')
-print('          <a href="#" title="Account"><i class="fas fa-user"></i> Account</a>')
+print('        <div class="dropdown">')
+print("          <button")
+print('            class="btn btn-secondary dropdown-toggle"')
+print('            type="button"')
+print('            id="dropdownMenuButton"')
+print('            data-toggle="dropdown"')
+print('            aria-haspopup="true"')
+print('            aria-expanded="false"')
+print('            title="Account"')
+print("          >")
+print('            <i class="fas fa-user"></i> Account')
+print("          </button>")
+print('          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">')
+print('            <a href="account.py"')
+print('            <a href="account.py" title="Update Account"')
+print('              ><i class="fas fa-user-edit"></i> Update Account</a')
+print("            >")
+print('            <a href="login.html" title="Logout"')
+print('              ><i class="fas fa-sign-out-alt"></i> Logout</a')
+print("            >")
+print("          </div>")
 print("        </div>")
 print('        <div class="item-container">')
-print('          <a href="index.html" title="Home">Home</a>')
-print('          <a href="vote.html" title="Vote">Vote</a>')
-print('          <a href="donation.html" title="Donation">Donation</a>')
+print(
+    '          <a href="index.html" title="Home"><i class="fas fa-home"></i> Home</a>'
+)
+print('          <div class="subnav">')
+print(
+    '            <a href="vote.html" title="Vote" class="subnav-link dropdown-toggle"'
+)
+print('              ><i class="fas fa-person-booth"></i> Vote')
+print("            </a>")
+print('            <div class="subnav-content">')
+print('              <a href="results.py" title="Results"')
+print('                ><i class="fas fa-poll"></i> Results</a')
+print("              >")
+print("            </div>")
+print("          </div>")
+print('          <a href="donation.html" title="Donation"')
+print('            ><i class="fas fa-hand-holding-usd"></i> Donation</a')
+print("          >")
 print("        </div>")
 print("      </nav>")
 print("    </header>")

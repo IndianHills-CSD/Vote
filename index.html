@@ -1,15 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
   <head>
     <title>Home</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <!-- Font Awesome Script -->
     <script
       src="https://kit.fontawesome.com/855ee508c4.js"
       crossorigin="anonymous"
-
     ></script>
-      
+
     <!-- Bootstrap -->
     <link
       rel="stylesheet"
@@ -20,40 +19,50 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
     <!-- Custom stylesheet -->
     <link rel="stylesheet" href="css/main-pages.css" />
   </head>
-  <header>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-sm bg-primary navbar-dark">
-    <div class="dropdown">
-      <button class="btn btn-secondary dropdown-toggle" type="button" id="accButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        Account Button
-      </button>
-      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-        <a class="fas fa-user" href="#">Account</a>
-        <a class="fas fa-user-edit" href="#">Update Account</a>
-        <a class="fas fa-sign-out-alt" href="#">Log Out</a>
-        </div>
-      </div>
-      <div class="item-container">
-        <a href="index.html" title="Home"><i class="fas fa-home"></i> Home</a>
-        <a href="vote.html" title="Vote"><i class="fas fa-person-booth"></i> Vote</a>
-        <a href="donation.html" title="Donation"><i class="fas fa-hand-holding-usd"></i> Donation</a>
-      </div>
-    </nav>
-  </header>
-<body>
+  <body>
     <header>
       <!-- Navbar -->
       <nav class="navbar navbar-expand-sm bg-primary navbar-dark">
-        <div id="acc">
-          <a href="#" title="Account"><i class="fas fa-user"></i> Account</a>
+        <div class="dropdown">
+          <button
+            class="btn btn-secondary dropdown-toggle"
+            type="button"
+            id="dropdownMenuButton"
+            data-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false"
+            title="Account"
+          >
+            <i class="fas fa-user"></i> Account
+          </button>
+          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <a href="account.py" title="View Account"
+              ><i class="fas fa-user-edit"></i> View Account</a
+            >
+            <a href="login.html" title="Logout"
+              ><i class="fas fa-sign-out-alt"></i> Logout</a
+            >
+          </div>
         </div>
         <div class="item-container">
-          <a href="index.html" title="Home">Home</a>
-          <a href="vote.html" title="Vote">Vote</a>
-          <a href="donation.html" title="Donation">Donation</a>
+          <a href="index.html" title="Home"><i class="fas fa-home"></i> Home</a>
+          <div class="subnav">
+            <a href="vote.html" title="Vote" class="subnav-link dropdown-toggle"
+              ><i class="fas fa-person-booth"></i> Vote
+            </a>
+            <div class="subnav-content">
+              <a href="results.py" title="Results"
+                ><i class="fas fa-poll"></i> Results</a
+              >
+            </div>
+          </div>
+          <a href="donation.html" title="Donation"
+            ><i class="fas fa-hand-holding-usd"></i> Donation</a
+          >
         </div>
       </nav>
     </header>
