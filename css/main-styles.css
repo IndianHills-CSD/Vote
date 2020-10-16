@@ -21,9 +21,9 @@ a {
     padding: 3px;
 }
 
-a:hover,
-a:focus,
-a:active {
+a:not(.delete):hover,
+a:not(.delete):focus,
+a:not(.delete):active {
     border-radius: 25%;
     background-color: #b22234;
 }
@@ -31,7 +31,7 @@ a:active {
 #container {
     color: #fff;
     position: fixed;
-    top: 0.5em;
+    top: .1em;
     width: 100%;
     height: 100%;
     display: flex;
@@ -78,8 +78,8 @@ select:focus {
 }
 
 input[type="submit"],
-.cancel {
-    width: 100%;
+.cancel,
+.delete {
     background-color: #b22234;
     border: 2px solid #871a27;
     color: #fff;
@@ -88,10 +88,17 @@ input[type="submit"],
     cursor: pointer;
 }
 
+input[type="submit"],
+.delete {
+    width: 100%;
+}
+
 input[type="submit"]:hover,
 .cancel:hover,
+.delete:hover,
 input[type="submit"]:focus,
-.cancel:focus {
+.cancel:focus,
+.delete:focus {
     opacity: 0.8;
 }
 
@@ -147,7 +154,7 @@ form[name="login"] .separate {
 }
 
 
-/* create.html Styles */
+/* create.html & account.py Styles */
 
 .row {
     display: flex;
@@ -173,23 +180,29 @@ form[name="login"] .separate {
     padding: 0 16px;
 }
 
-form[name="signup"] {
+form[name="signup"],
+form[name="update"] {
     padding: 15px;
     width: 90%;
     font-size: 0.8em;
 }
 
 form[name="signup"] input:not([type="submit"]),
+form[name="update"] input:not([type="submit"]),
 select {
     padding: 10px 12px;
 }
 
 form[name="signup"] input,
-select {
+form[name="update"] input,
+select,
+.delete {
     margin: 10px 0;
 }
 
-form[name="signup"] input[type="submit"] {
+form[name="signup"] input[type="submit"],
+form[name="update"] input[type="submit"],
+.delete {
     padding: 10px;
 }
 
@@ -198,11 +211,20 @@ select,
     cursor: pointer;
 }
 
-form[name="signup"] .separate {
+form[name="signup"] .separate,
+form[name="update"] .separate {
     padding: 4px;
 }
 
 .cancel {
     padding: 5px 9px;
     width: auto;
+}
+
+
+/* account.py Styles */
+
+.delete {
+    text-align: center;
+    display: inline-block;
 }
