@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS accounts (
     email VARCHAR(56) NOT NULL,    -- will be encrypted in the database
     age TINYINT NOT NULL CHECK (age > 17 AND age <= 120),
     addr VARCHAR(25) UNIQUE NOT NULL,    -- the street the user lives on
-    city VARCHAR(10) NOT NULL,
+    city VARCHAR(48) NOT NULL,
     state VARCHAR(14) NOT NULL,
     zipCode MEDIUMINT NOT NULL CHECK (zipCode >= 10000 AND zipCode < 100000),
     poliAffil VARCHAR(11) NOT NULL    -- the political affiliation of the user
