@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS accounts (
     addr VARCHAR(25) UNIQUE NOT NULL,    -- the street the user lives on
     city VARCHAR(48) NOT NULL,
     state VARCHAR(14) NOT NULL,
-    zipCode MEDIUMINT NOT NULL CHECK (zipCode >= 10000 AND zipCode < 100000),
+    zipCode CHAR(5) NOT NULL CHECK (LENGTH(zipCode) == 5),
     poliAffil VARCHAR(11) NOT NULL    -- the political affiliation of the user
 ) ENGINE = innoDB;    -- specifies which MySQL engine to use
 
