@@ -88,9 +88,9 @@ def valid_address(addr, cty, st, zip):
     if not zipcode.isdigit():
         errors += 1
         errmsgs.append("        <p>Zip code should only contain digits</p>")
-    elif int(zipcode) < 10000 or int(zipcode) > 99999:
+    elif len(zipcode) != 5:
         errors += 1
-        errmsgs.append("        <p>Zip code should be only 5 digits long</p>")
+        errmsgs.append("        <p>Zip code should be 5 digits long</p>")
 
     return errors
 
@@ -434,7 +434,7 @@ if errctr == 0:
     # Checks if the account that was entered is already exists
     errctr += select_account()
 
-    uname_cookie = get_cookie()  # gets the original "username"
+    uname_cookie = get_cookie()  # gets the original username that was used
 
     # Sets the "uname" cookie to a new value if a new username was submitted
     if uname_cookie != uname:
@@ -455,7 +455,7 @@ print("  <body>")
 print('    <div id="container">')
 print('      <div id="content">')
 
-# Checks if any errors occured
+# Checks if any errors occurred
 if errctr == 0:
     print("        <h1>Account was updated!</h1>")
     print("        <p>Your account has been successfully updated!</p>")
