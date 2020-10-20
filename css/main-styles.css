@@ -130,6 +130,41 @@ form[name="login"] .separate {
     padding: 8px;
 }
 
+/* reset.html styles */
+
+form[name="passReset"] {
+    padding: 25px;
+}
+
+form[name="passReset"] input[type="text"],
+form[name="passReset"] input[type="password"] {
+    padding: 15px 17px;
+}
+
+form[name="passReset"] input[type="text"] {
+    margin-bottom: 15px;
+}
+
+form[name="passReset"] input[type="password"] {
+    margin-bottom: 25px;
+}
+
+form[name="passReset"] input[type="submit"] {
+    padding: 15px;
+}
+
+form[name="passReset"] .separate {
+    padding: 8px;
+}
+.row {
+    display: flex;
+    flex-flow: wrap;
+    margin: 0 -16px;
+}
+.col-50 {
+    flex: 50%;
+}
+
 
 /* login.py, create.py, donation.py, & vote.py Styles */
 
