@@ -81,6 +81,8 @@ for party in parties:
         )
     else:
         print('              <option value="' + party + '">' + party + "</option>")
+
+# HTML code that is always printed
 print("            </select>")
 print("          </div>")
 print("        </div>\n")
@@ -161,6 +163,7 @@ for state in states:
     else:
         print('              <option value="' + state + '">' + state + "</option>")
 
+# HTML code that is always printed
 print("            </select>")
 print("          </div>\n")
 print('          <div class="col-25">')
