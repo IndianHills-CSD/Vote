@@ -363,6 +363,7 @@ if errctr == 0:
 
 print("Content-Type: text/html")
 
+# Checks if any errors occurred
 if errctr == 0:
     # Sets the new location (URL) to the login.html page
     print("Location: http://localhost/vote-project/login.html\n")

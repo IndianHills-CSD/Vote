@@ -8,7 +8,6 @@
 html {
     background: linear-gradient( to right, rgba(167, 167, 209, 0.7), rgba(255, 255, 255, 0.9), rgba(178, 34, 52, 0.5));
     background-size: 100% 100%;
-    margin: 0;
 }
 
 :focus {
@@ -21,9 +20,9 @@ a {
     padding: 3px;
 }
 
-a:not(.delete):hover,
-a:not(.delete):focus,
-a:not(.delete):active {
+a:not(.cancel):not(.delete):hover,
+a:not(.cancel):not(.delete):focus,
+a:not(.cancel):not(.delete):active {
     border-radius: 25%;
     background-color: #b22234;
 }
@@ -47,7 +46,7 @@ form,
 }
 
 
-/* login.html & create.html Styles */
+/* login.html, reset.html, create.html, & account.py Styles */
 
 label {
     margin-bottom: 5px;
@@ -103,70 +102,56 @@ input[type="submit"]:focus,
 }
 
 
-/* login.html Styles */
+/* login.html & reset.html Styles */
 
-form[name="login"] {
+form[name="login"],
+form[name="reset"] {
     padding: 25px;
 }
 
 form[name="login"] input[type="text"],
-form[name="login"] input[type="password"] {
+form[name="reset"] input[type="text"],
+form[name="login"] input[type="password"],
+form[name="reset"] input[type="password"] {
     padding: 15px 17px;
 }
 
-form[name="login"] input[type="text"] {
+form[name="login"] input[type="text"],
+form[name="reset"] input[type="text"] {
     margin-bottom: 15px;
 }
 
-form[name="login"] input[type="password"] {
+form[name="login"] input[type="password"],
+form[name="reset"] input[type="password"] {
     margin-bottom: 25px;
 }
 
-form[name="login"] input[type="submit"] {
+form[name="login"] input[type="submit"],
+form[name="reset"] input[type="submit"] {
     padding: 15px;
 }
+
+
+/* login.html Style */
 
 form[name="login"] .separate {
     padding: 8px;
 }
 
-/* reset.html styles */
 
-form[name="passReset"] {
-    padding: 25px;
-}
+/* reset.html Styles */
 
-form[name="passReset"] input[type="text"],
-form[name="passReset"] input[type="password"] {
-    padding: 15px 17px;
+form[name="reset"] .cancel {
+    margin-top: 10px;
+    padding: 10px 18px;
 }
 
-form[name="passReset"] input[type="text"] {
-    margin-bottom: 15px;
-}
-
-form[name="passReset"] input[type="password"] {
-    margin-bottom: 25px;
-}
-
-form[name="passReset"] input[type="submit"] {
-    padding: 15px;
-}
-
-form[name="passReset"] .separate {
-    padding: 8px;
-}
-.row {
-    display: flex;
-    flex-flow: wrap;
-    margin: 0 -16px;
-}
-.col-50 {
-    flex: 50%;
+form[name="reset"] .separate {
+    padding: 8px 4px;
 }
 
 
-/* login.py, create.py, donation.py, & vote.py Styles */
+/* login.py, reset.py, create.py, donation.py, vote.py,  Styles */
 
 #content {
     display: flex;
@@ -189,7 +174,7 @@ form[name="passReset"] .separate {
 }
 
 
-/* create.html & account.py Styles */
+/* create.html, reset.html & account.py Styles */
 
 .row {
     display: flex;
@@ -241,25 +226,22 @@ form[name="update"] input[type="submit"],
     padding: 10px;
 }
 
-select,
-.cancel {
+select {
     cursor: pointer;
+}
+
+.delete,
+.cancel {
+    text-align: center;
+    display: inline-block;
+}
+
+form[name="signup"] .cancel,
+form[name="update"] .cancel {
+    padding: 5px 9px;
 }
 
 form[name="signup"] .separate,
 form[name="update"] .separate {
     padding: 4px;
-}
-
-.cancel {
-    padding: 5px 9px;
-    width: auto;
-}
-
-
-/* account.py Styles */
-
-.delete {
-    text-align: center;
-    display: inline-block;
 }
