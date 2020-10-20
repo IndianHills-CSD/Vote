@@ -35,19 +35,19 @@ def dem_votes():
     results = cursor.fetchall()  # returns a list of tuples
 
     content.append('      <div class="content">')
+    content.append("        <h3>Democrat</h3>")
 
     (votes, can) = results[0]  # unpacks the list of tuples
 
     # Checks if any results where found
     if votes != None and can != None:
         votes = "        <b>" + str(votes) + " vote(s)</b>"
-        can = "        <h3>" + str(can) + "</h3>"
+        can = "        <b>" + str(can) + "</b>"
         content.append(can)
         content.append(votes)
     else:
-        content.append("        <h3>No votes yet!</h3>")
+        content.append("        <b>No votes yet!</b>")
 
-    content.append("        <b>Democrat</b>")
     content.append("      </div>")
 
 
@@ -69,19 +69,19 @@ def rep_votes():
     results = cursor.fetchall()  # returns a list of tuples
 
     content.append('      <div class="content">')
+    content.append("        <h3>Republican</h3>")
 
     (votes, can) = results[0]  # unpacks the list of tuples
 
     # Checks if any results where found
     if votes != None and can != None:
         votes = "        <b>" + str(votes) + " vote(s)</b>"
-        can = "        <h3>" + str(can) + "</h3>"
+        can = "        <b>" + str(can) + "</b>"
         content.append(can)
         content.append(votes)
     else:
-        content.append("        <h3>No votes yet!</h3>")
+        content.append("        <b>No votes yet!</b>")
 
-    content.append("        <b>Republican</b>")
     content.append("      </div>")
 
 
@@ -101,19 +101,19 @@ def ind_votes():
     results = cursor.fetchall()  # returns a list of tuples
 
     content.append('      <div class="content">')
+    content.append("        <h3>Independent</h3>")
 
     (votes, can) = results[0]  # unpacks the list of tuples
 
     # Checks if any results where found
     if votes != None and can != None:
         votes = "        <b>" + str(votes) + " vote(s)</b>"
-        can = "        <h3>" + str(can) + "</h3>"
+        can = "        <b>" + str(can) + "</b>"
         content.append(can)
         content.append(votes)
     else:
-        content.append("        <h3>No votes yet!</h3>")
+        content.append("        <b>No votes yet!</b>")
 
-    content.append("        <b>Independent</b>")
     content.append("      </div>")
 
 
