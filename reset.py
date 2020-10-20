@@ -175,8 +175,8 @@ def update_salt(salt):
     db.commit()  # saves changes
 
 
-errctr = 0
-errmsgs = []
+errctr = 0  # keeps track of the total number of errors that have been found
+errmsgs = []  # intializes an empty list of error messages
 
 # Connects to the database
 db = connect_db()
