@@ -151,11 +151,10 @@ print(cookies["uname"])  # prints "Set-Cookie: uname=value"
 
 print("Content-Type: text/html")
 
-# Checks if any errors occured
+# Checks if any errors occurred
 if errctr == 0:
     # Sets the new location (URL) to the index.html page
-    print("Location: http://localhost/vote-project/index.html")
-    print()
+    print("Location: http://localhost/vote-project/index.html\n")
 
     # For when the page is still redirecting
     print("<!DOCTYPE html>")

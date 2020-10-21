@@ -87,9 +87,9 @@ def valid_address(addr, cty, st, zip):
     if not zipcode.isdigit():
         errors += 1
         errmsgs.append("        <p>Zip code should only contain digits</p>")
-    elif int(zipcode) < 10000 or int(zipcode) > 99999:
+    elif len(zipcode) != 5:
         errors += 1
-        errmsgs.append("        <p>Zip code should be only 5 digits long</p>")
+        errmsgs.append("        <p>Zip code should be 5 digits long</p>")
 
     return errors
 
@@ -185,7 +185,7 @@ def select_account(uname, addr):
         else:
             errors += 1
             errmsgs.append("        <p>Account already exists</p>")
-    
+
     except mysql.Error as e:
         errctr += 1
         msg = "        <p>" + str(e) + "</p>"
@@ -363,10 +363,10 @@ if errctr == 0:
 
 print("Content-Type: text/html")
 
+# Checks if any errors occurred
 if errctr == 0:
     # Sets the new location (URL) to the login.html page
-    print("Location: http://localhost/vote-project/login.html")
-    print()
+    print("Location: http://localhost/vote-project/login.html\n")
 
     # For when the page is still redirecting
     print("<!DOCTYPE html>")

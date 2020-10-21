@@ -81,6 +81,8 @@ for party in parties:
         )
     else:
         print('              <option value="' + party + '">' + party + "</option>")
+
+# HTML code that is always printed
 print("            </select>")
 print("          </div>")
 print("        </div>\n")
@@ -161,11 +163,12 @@ for state in states:
     else:
         print('              <option value="' + state + '">' + state + "</option>")
 
+# HTML code that is always printed
 print("            </select>")
 print("          </div>\n")
 print('          <div class="col-25">')
 print('            <label for="zip">Zip Code</label>')
-print('            <input name="zip" type="number" value="' + str(zipcode) + '" />')
+print('            <input name="zip" type="number" value="' + zipcode + '" />')
 print("          </div>")
 print("        </div>\n")
 print('        <div class="row">')
@@ -182,7 +185,7 @@ print('              name="uname"')
 print('              type="text"')
 print('              value="' + uname + '"')
 print(
-    '              title="Note: all whitespace characters (such as spaces) will be removed"'
+    '              title="Note: Any extra whitespace characters (such as spaces) will be removed"'
 )
 print("            />")
 print("          </div>\n")
@@ -192,7 +195,7 @@ print("            <input")
 print('              name="psw1"')
 print('              type="password"')
 print(
-    '              title="Note: all whitespace characters (such as spaces) will be removed"'
+    '              title="Note: Any extra whitespace characters (such as spaces) will be removed"'
 )
 print("            />")
 print("          </div>\n")
@@ -202,7 +205,7 @@ print("            <input")
 print('              name="psw2"')
 print('              type="password"')
 print(
-    '              title="Note: all whitespace characters (such as spaces) will be removed"'
+    '              title="Note: Any extra whitespace characters (such as spaces) will be removed"'
 )
 print("            />")
 print("          </div>")
