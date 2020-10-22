@@ -169,6 +169,7 @@ def select_account(uname, addr):
     """
     Checks if an account that was entered is in the Accounts table
     """
+    global errctr
     errors = 0
 
     try:
@@ -282,12 +283,12 @@ form = cgi.FieldStorage()
 if "fname" in form:
     fname = form.getvalue("fname")
 else:
-    fname = ""
+    fname = "Test"
 
 if "lname" in form:
     lname = form.getvalue("lname")
 else:
-    lname = ""
+    lname = "Test"
 
 errctr += valid_name(fname, lname)
 
@@ -295,7 +296,7 @@ errctr += valid_name(fname, lname)
 if "age" in form:
     age = form.getvalue("age")
 else:
-    age = ""
+    age = "18"
 
 errctr += valid_age(age)
 
@@ -303,7 +304,7 @@ errctr += valid_age(age)
 if "polaffil" in form:
     polaffil = form.getvalue("polaffil")
 else:
-    polaffil = ""
+    polaffil = "Democrat"
 
 errctr += valid_pol_affil(polaffil)
 
@@ -311,22 +312,22 @@ errctr += valid_pol_affil(polaffil)
 if "addr" in form:
     addr = form.getvalue("addr")
 else:
-    addr = ""
+    addr = "321 North Street"
 
 if "cty" in form:
     cty = form.getvalue("cty")
 else:
-    cty = ""
+    cty = "Ottumwa"
 
 if "st" in form:
     st = form.getvalue("st")
 else:
-    st = ""
+    st = "State"
 
 if "zip" in form:
     zipcode = form.getvalue("zip")
 else:
-    zipcode = ""
+    zipcode = "92341"
 
 errctr += valid_address(addr, cty, st, zipcode)
 
@@ -334,7 +335,7 @@ errctr += valid_address(addr, cty, st, zipcode)
 if "email" in form:
     email = form.getvalue("email")
 else:
-    email = ""
+    email = "you@gmail.com"
 
 errctr += valid_email(email)
 
@@ -342,17 +343,17 @@ errctr += valid_email(email)
 if "uname" in form:
     uname = form.getvalue("uname")
 else:
-    uname = ""
+    uname = "testing"
 
 if "psw1" in form:
     psw1 = form.getvalue("psw1")
 else:
-    psw1 = ""
+    psw1 = "test1ng1"
 
 if "psw2" in form:
     psw2 = form.getvalue("psw2")
 else:
-    psw2 = ""
+    psw2 = "test1ng1"
 
 errctr += valid_account(uname, psw1, psw2)
 
@@ -366,7 +367,8 @@ print("Content-Type: text/html")
 # Checks if any errors occurred
 if errctr == 0:
     # Sets the new location (URL) to the login.html page
-    print("Location: http://localhost/vote-project/login.html\n")
+    print("Location: http://localhost/vote-project/login.html")
+    print()
 
     # For when the page is still redirecting
     print("<!DOCTYPE html>")
