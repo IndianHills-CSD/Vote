@@ -33,7 +33,17 @@ db = connect_db()
 cursor = db.cursor(prepared=True)  # allows the prepare statement to be used
 values = find_account()
 
-(uname, fname, lname, age, addr, cty, st, zipcode, polaffil) = values   # unpacks the tuple
+(
+    uname,
+    fname,
+    lname,
+    age,
+    addr,
+    cty,
+    st,
+    zipcode,
+    polaffil,
+) = values  # unpacks the tuple
 
 print("Content-Type: text/html\n")
 
