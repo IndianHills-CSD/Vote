@@ -84,11 +84,14 @@ def find_salt():
     salt = ""  # returns nothing if invalid
 
     # Prepare SELECT statement
-    prep_select = "SELECT salt FROM accounts NATURAL JOIN salt WHERE accId = %s"
+    prep_select = "SELECT salt FROM salt WHERE accId = %s"
 
     accid = find_accid()
 
-    cursor.execute(prep_select, (accid,))
+    # A tuple is always use when binding placeholders (%s)
+    cursor.execute(
+        prep_select, (accid,)  # you write (var,) when searching for one value
+    )
     result = cursor.fetchall()  # returns a list of tuples
 
     if result:
@@ -108,7 +111,10 @@ def find_accid():
     # Prepare SELECT statement
     prep_select = "SELECT accId FROM accounts WHERE uname = %s"
 
-    cursor.execute(prep_select, (uname,))
+    # A tuple is always use when binding placeholders (%s)
+    cursor.execute(
+        prep_select, (uname,)  # you write (var,) when searching for one value
+    )
     result = cursor.fetchall()  # returns a list of tuples
 
     if result:
