@@ -120,7 +120,6 @@ def valid_account(uname, psw1, psw2):
     re-entered
     """
     errors = 0  # keeps track of all errors
-    val_psws = True  # determines if psw1 and psw2 should be checked for equality
 
     # Username validation
     if len(uname.strip()) == 0:
@@ -135,13 +134,14 @@ def valid_account(uname, psw1, psw2):
     digits = re.search("\d{1,}", psw1)  # checks for 1 or more digits
     wschar2 = re.search("\s{1,}", psw2)  # checks for any whitespace characters
     digits2 = re.search("\d{1,}", psw2)  # checks for 1 or more digits
+    val_psws = True  # determines if psw1 and psw2 should be checked for equality
 
     if len(psw1.strip()) == 0 or len(psw2.strip()) == 0:
         errors += 1
         errmsgs.append(
             "        <p>Password was either not entered at all or not re-entered</p>"
         )
-        valPsws = False
+        val_psws = False
     elif (
         len(psw1.strip()) < 8
         or wschar
@@ -166,22 +166,38 @@ def valid_account(uname, psw1, psw2):
     return errors
 
 
+def valid_username(uname):
+    """
+    Checks if a valid username was entered
+    """
+    errors = 0  # keeps track of all errors
+
+    if len(uname.strip()) == 0:
+        errors += 1
+        errmsgs.append("        <p>Username was not entered</p>")
+    elif len(uname.strip()) < 4:
+        errors += 1
+        errmsgs.append("        <p>Username should be at least 4 characters long</p>")
+
+    return errors
+
+
 def select_account():
     """
     Checks if an account that was entered contains any new data
     """
     errors = 0
-    enc_repeat = (
-        False  # used to determine if the same email and/or password was re-entered
-    )
+    # Determines if the same password or email was re-entered
+    enc_repeat = False
 
     try:
-        enc_values = find_encdata()
+        enc_values = find_encdata()  # returns a tuple
+        (enc_psw, enc_email) = enc_values  # unpacks the tuple
         salt = eval(
             find_salt()  # converts the salt that is returned from find_salt() back to bytes
         )
-        (enc_psw, enc_email) = enc_values
 
+        # Checks if the user decided to reuse a password or email address
         if enc.verify_hash(enc_psw, psw1, salt) or enc.verify_hash(
             enc_email, email, salt
         ):
@@ -209,9 +225,14 @@ def select_account():
 
         if not result or not enc_repeat:
             update_account()
+        elif enc_repeat:
+            errors += 1
+            errmsgs.append(
+                "        <p>A new password and/or email should be entered</p>"
+            )
         else:
             errors += 1
-            errmsgs.append("        <p>Account did not change</p>")
+            errmsgs.append("        <p>New information needs to be entered</p>")
 
     except mysql.Error as e:
         errors += 1
@@ -225,6 +246,7 @@ def find_encdata():
     """
     Searches the Accounts table for the user's encrypted password and email address
     """
+    # The "uname" cookie is used in order to ensure that the original username is always used
     uname_cookie = get_cookie()  # gets the value of the "uname" cookie
 
     # Prepare SELECT statement
@@ -232,7 +254,8 @@ def find_encdata():
 
     # A tuple should always be used when binding placeholders (%s)
     cursor.execute(
-        prep_select, (uname,)  # you use (value,) when searching for a single value
+        prep_select,
+        (uname_cookie,),  # you use (value,) when searching for a single value
     )
 
     result = cursor.fetchall()  # returns a list of tuples
@@ -247,12 +270,12 @@ def find_salt():
     """
     Determines which salt to use for verifying passwords and email addresses
     """
-    salt = ""  # returns nothing if invalid
+    salt = ""  # used to return nothing if no salt is found
+
+    accid = find_accid()  # gets an ID
 
     # Prepare SELECT statement
     prep_select = "SELECT salt FROM salt WHERE accId = %s"
-
-    accid = find_accid()
 
     cursor.execute(prep_select, (accid,))
     result = cursor.fetchall()  # returns a list of tuples
@@ -268,15 +291,15 @@ def find_accid():
     """
     Finds the ID of an account for the Salt table
     """
-    # The "uname" cookie is used so the original "username" is always used
-    uname = get_cookie()
+    # The "uname" cookie is used in order to ensure that the original username is always used
+    uname_cookie = get_cookie()  # gets the value of the "uname" cookie
     accid = 0
 
     # Prepare SELECT statement
     prep_select = "SELECT accId FROM accounts WHERE uname = %s"
 
     # A tuple should always be used to bind placeholders
-    cursor.execute(prep_select, (uname,))
+    cursor.execute(prep_select, (uname_cookie,))
     result = cursor.fetchall()  # returns a list of tuples
 
     if result:
@@ -289,18 +312,38 @@ def find_accid():
 
 def update_account():
     """
-    Used to update accounts
+    Updates accounts using the prepare statement
     """
-    global errctr
-    accid = find_accid()  # gets an id
+    # Determines if the salt used by an account in the Salt table should be updated
+    new_salt = False
+    accid = find_accid()  # gets an ID
+
+    # Gets the original encrypted values to use for defaulting data
+    enc_values = find_encdata()  # returns a tuple
+    (pwd, email_addr) = enc_values  # unpacks the tuple
+
+    # Checks if the password and email address that were submitted should be encrypted
+    if psw1 != "" or email != "":
+        salt = os.urandom(64)  # generates a new salt value
+        new_salt = True
+
+        if psw1 != "":
+            enc_psw = enc.create_hash(psw1, salt)
+        else:
+            # Re-encrypts data so validation still works
+            enc_psw = enc.create_hash(pwd, salt)
+
+        if email != "":
+            enc_email = enc.create_hash(email, salt)
+        else:
+            # Re-encrypts data so validation still works
+            enc_email = enc.create_hash(email_addr, salt)
+    else:
+        enc_psw = pwd
+        enc_email = email_addr
 
     # Prepare UPDATE statement
     prep_update = "UPDATE accounts SET uname = %s, pwd = %s, fname = %s, lname = %s, email = %s, age = %s, addr = %s, city = %s, state = %s, zipCode = %s, poliAffil = %s WHERE accId = %s"
-
-    salt = os.urandom(64)
-
-    enc_psw = enc.create_hash(psw1, salt)
-    enc_email = enc.create_hash(email, salt)
 
     values = (
         uname,
@@ -320,7 +363,8 @@ def update_account():
     # A tuple should always be used when binding placeholders (%s)
     cursor.execute(prep_update, values)
 
-    update_salt(salt, accid)
+    if new_salt:
+        update_salt(salt, accid)
 
     db.commit()  # saves changes
 
@@ -329,7 +373,7 @@ def update_salt(salt, accid):
     """
     Updates the salt value that is used to encrypt data using the prepare statement
     """
-    # Prepare INSERT statement
+    # Prepare UPDATE statement
     prep_update = "UPDATE salt SET salt = %s WHERE accId = %s"
 
     cursor.execute(prep_update, (str(salt), accid))
@@ -406,10 +450,9 @@ errctr += valid_address(addr, cty, st, zipcode)
 # Email Validation
 if "email" in form:
     email = form.getvalue("email")
+    errctr += valid_email(email)
 else:
     email = ""
-
-errctr += valid_email(email)
 
 # Username and Password Validation
 if "uname" in form:
@@ -417,23 +460,25 @@ if "uname" in form:
 else:
     uname = ""
 
-if "psw1" in form:
-    psw1 = form.getvalue("psw1")
-else:
-    psw1 = ""
+# Sets default values
+psw1 = ""
+psw2 = ""
 
-if "psw2" in form:
-    psw2 = form.getvalue("psw2")
-else:
-    psw2 = ""
+if "psw1" in form or "psw2" in form:
+    if "psw1" in form:
+        psw1 = form.getvalue("psw1")
 
-errctr += valid_account(uname, psw1, psw2)
+    if "psw2" in form:
+        psw2 = form.getvalue("psw2")
+
+    errctr += valid_account(uname, psw1, psw2)
+else:
+    errctr += valid_username(uname)
 
 # Determines if select_account() should be called
 if errctr == 0:
-    # Checks if the account that was entered is already exists
+    # Checks if the account that was entered already exists
     errctr += select_account()
-
     uname_cookie = get_cookie()  # gets the original username that was used
 
     # Sets the "uname" cookie to a new value if a new username was submitted
@@ -463,7 +508,7 @@ if errctr == 0:
 else:
     print("        <h1>Error</h1>")
 
-    # Prints any error messages when errors occur
+    # Loop that prints every error message in the "errmsgs" list
     for i in range(errctr):
         print(errmsgs[i])
 
