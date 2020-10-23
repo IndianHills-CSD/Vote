@@ -3,7 +3,6 @@
 import mysql.connector as mysql
 from connectlib import connect_db
 from cookielib import get_cookie
-from encryptionlib import verify_hash
 
 
 def find_account():
