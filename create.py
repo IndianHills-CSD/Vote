@@ -140,7 +140,7 @@ def valid_account(uname, psw1, psw2):
         errmsgs.append(
             "        <p>Password was either not entered at all or not re-entered</p>"
         )
-        valPsws = False
+        val_psws = False
     elif (
         len(psw1.strip()) < 8
         or wschar
@@ -169,7 +169,6 @@ def select_account(uname, addr):
     """
     Checks if an account that was entered is in the Accounts table
     """
-    global errctr
     errors = 0
 
     try:
@@ -188,7 +187,7 @@ def select_account(uname, addr):
             errmsgs.append("        <p>Account already exists</p>")
 
     except mysql.Error as e:
-        errctr += 1
+        errors += 1
         msg = "        <p>" + str(e) + "</p>"
         errmsgs.append(msg)
 
@@ -283,12 +282,12 @@ form = cgi.FieldStorage()
 if "fname" in form:
     fname = form.getvalue("fname")
 else:
-    fname = "Test"
+    fname = ""
 
 if "lname" in form:
     lname = form.getvalue("lname")
 else:
-    lname = "Test"
+    lname = ""
 
 errctr += valid_name(fname, lname)
 
@@ -296,7 +295,7 @@ errctr += valid_name(fname, lname)
 if "age" in form:
     age = form.getvalue("age")
 else:
-    age = "18"
+    age = ""
 
 errctr += valid_age(age)
 
@@ -304,7 +303,7 @@ errctr += valid_age(age)
 if "polaffil" in form:
     polaffil = form.getvalue("polaffil")
 else:
-    polaffil = "Democrat"
+    polaffil = ""
 
 errctr += valid_pol_affil(polaffil)
 
@@ -312,22 +311,22 @@ errctr += valid_pol_affil(polaffil)
 if "addr" in form:
     addr = form.getvalue("addr")
 else:
-    addr = "321 North Street"
+    addr = ""
 
 if "cty" in form:
     cty = form.getvalue("cty")
 else:
-    cty = "Ottumwa"
+    cty = ""
 
 if "st" in form:
     st = form.getvalue("st")
 else:
-    st = "State"
+    st = ""
 
 if "zip" in form:
     zipcode = form.getvalue("zip")
 else:
-    zipcode = "92341"
+    zipcode = ""
 
 errctr += valid_address(addr, cty, st, zipcode)
 
@@ -335,7 +334,7 @@ errctr += valid_address(addr, cty, st, zipcode)
 if "email" in form:
     email = form.getvalue("email")
 else:
-    email = "you@gmail.com"
+    email = ""
 
 errctr += valid_email(email)
 
@@ -343,17 +342,17 @@ errctr += valid_email(email)
 if "uname" in form:
     uname = form.getvalue("uname")
 else:
-    uname = "testing"
+    uname = ""
 
 if "psw1" in form:
     psw1 = form.getvalue("psw1")
 else:
-    psw1 = "test1ng1"
+    psw1 = ""
 
 if "psw2" in form:
     psw2 = form.getvalue("psw2")
 else:
-    psw2 = "test1ng1"
+    psw2 = ""
 
 errctr += valid_account(uname, psw1, psw2)
 
@@ -367,8 +366,7 @@ print("Content-Type: text/html")
 # Checks if any errors occurred
 if errctr == 0:
     # Sets the new location (URL) to the login.html page
-    print("Location: http://localhost/vote-project/login.html")
-    print()
+    print("Location: http://localhost/vote-project/login.html\n")
 
     # For when the page is still redirecting
     print("<!DOCTYPE html>")

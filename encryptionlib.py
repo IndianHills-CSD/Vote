@@ -5,7 +5,7 @@ import hashlib, os
 
 def create_hash(data, salt):
     """
-    Encrypts the data
+    Encrypts data
     """
     # Adds the salt (in hex) to the data that was entered
     salt_input = str(data) + str(salt.hex())
@@ -17,7 +17,7 @@ def create_hash(data, salt):
 
 def verify_hash(hashed, data, salt):
     """
-    Checks to see if the hash matches the unencrypted data
+    Checks if the hash matches the unencrypted data
     """
     # Adds the salt (in hex) to the data that was entered
     salt_input = str(data) + str(salt.hex())

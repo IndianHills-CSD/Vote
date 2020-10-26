@@ -3,7 +3,6 @@
 import mysql.connector as mysql
 from connectlib import connect_db
 from cookielib import get_cookie
-from encryptionlib import verify_hash
 
 
 def find_account():
@@ -34,7 +33,17 @@ db = connect_db()
 cursor = db.cursor(prepared=True)  # allows the prepare statement to be used
 values = find_account()
 
-(uname, fname, lname, age, addr, cty, st, zipcode, polaffil) = values
+(
+    uname,
+    fname,
+    lname,
+    age,
+    addr,
+    cty,
+    st,
+    zipcode,
+    polaffil,
+) = values  # unpacks the tuple
 
 print("Content-Type: text/html\n")
 
@@ -174,7 +183,13 @@ print("        </div>\n")
 print('        <div class="row">')
 print('          <div class="col-75">')
 print('            <label for="email">Email Address</label>')
-print('            <input name="email" type="email" />')
+print("            <input")
+print('              name="email"')
+print('              type="email"')
+print(
+    '              title="Note: You can leave this field and the password fields blank if you wish to not change these fields"'
+)
+print("            />")
 print("          </div>")
 print("        </div>\n")
 print('        <div class="row">')
@@ -212,16 +227,14 @@ print("          </div>")
 print("        </div>\n")
 print('        <div class="row">')
 print('          <div class="col-50">')
-print('            <input type="submit" value="Update" \>\n')
+print('            <input type="submit" value="Update" title="Update" \>\n')
 print("          </div>")
 print('          <div class="col-50">')
-print('            <a href="delete.py" class="delete">Delete</a>\n')
+print('            <a href="delete.py" class="delete" title="Delete">Delete</a>\n')
 print("          </div>")
 print("        </div>\n")
 print('        <div class="separate">')
-print('          <button class="cancel">')
-print('            <a href="index.html">Cancel</a>')
-print("          </button>")
+print('          <a href="index.html" class="cancel" title="Cancel">Cancel</a>')
 print("        </div>")
 print("      </form>")
 print("    </div>")
