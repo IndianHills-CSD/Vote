@@ -25,3 +25,56 @@ Donation 2:
 - Bitcoin: 1CUdesBmnYjtuM8wpLafhKoE3Sds4LSv4v
 
 Donation 3:
+- Username: user1234
+- Password: pass1234
+- Candidate: John Green
+- Amount: $90.00
+- Credit Card Number: None
+- CVV: None
+- Exp. Month: None
+- Exp. Year: None
+- Bitcoin: 1ETfSnf7me5No9HZ6aeYRyvQAffpPFvf9g
+
+Donation 4:
+- Username: test
+- Password: testing1
+- Candidate: Free Dom
+- Amount: $12.00
+- Credit Card Number: 2143-21543-52143
+- CVV: 213
+- Exp. Month: October
+- Exp. Year: 2020
+- Bitcoin: None
+
+Donation 5:
+- Username: red1
+- Password: r3dn3cks
+- Candidate: Free Dom
+- Amount: $123.89
+- Credit Card Number: 4321-54321-54321
+- CVV: 321
+- Exp. Month: September
+- Exp. Year: 2021
+- Bitcoin: None
+
+Donation 6:
+- Username: red1
+- Password: r3dn3cks
+- Candidate: John Green
+- Amount: $50.00
+- Credit Card Number: 4321-54321-54321
+- CVV: 321
+- Exp. Month: September
+- Exp. Year: 2021
+- Bitcoin: None
+
+Donation 7:
+- Username: user1234
+- Password: pass1234
+- Candidate: Free Dom
+- Amount: $100.58
+- Credit Card Number: None
+- CVV: None
+- Exp. Month: None
+- Exp. Year: None
+- Bitcoin: 1ETfSnf7me5No9HZ6aeYRyvQAffpPFvf9g
