@@ -11,3 +11,5 @@ Candidate 2:
 - Political Party: Green Party
 
 Candidate 3:
+- Candidate: Free Dom
+- Political Party: Libertarian
