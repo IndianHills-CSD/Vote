@@ -32,6 +32,11 @@ a:not(.cancel):not(.delete):active {
 
 #container {
     color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    /* For scroll bar */
     position: absolute;
     top: 0;
     bottom: 0;
@@ -39,10 +44,6 @@ a:not(.cancel):not(.delete):active {
     right: -1.063em;
     width: 100%;
     min-height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
 }
 
 form,
