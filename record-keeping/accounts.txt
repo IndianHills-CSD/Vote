@@ -30,4 +30,40 @@ Account 2:
 - political affiliation: Independent
 
 Account 3:
-- 
+- username: test
+- password: testing1
+- firstname: Test
+- lastname: Ing
+- email: test@gmail.com
+- age: 56
+- address: 297 Castle Town
+- city: Bigson
+- state: Alabama
+- zip code: 00001
+- political affiliation: Republican
+
+Account 4:
+- username: user1234
+- password: pass1234
+- firstname: First
+- lastname: Last
+- email: user1234@gmail.com
+- age: 18
+- address: 517 Downtown Avenue
+- city: Village Town
+- state: South Carolina
+- zip code: 01021
+- political affiliation: Democrat
+
+Account 5:
+- username: red1
+- password: r3dn3cks
+- firstname: Red
+- lastname: Neck
+- email: red1@gmail.com
+- age: 76
+- address: 629 Street
+- city: Red County
+- state: Illinois
+- zip code: 78923
+- political affiliation: Republican
