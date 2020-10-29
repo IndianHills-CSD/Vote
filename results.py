@@ -22,7 +22,7 @@ def dem_votes():
     Finds which Democratic candidate (if any exist) has the most votes
     """
     # Prepare SELECT statements
-    prep_subselect = "SELECT COUNT(*) AS Total, candidate FROM votes WHERE polParty = %s GROUP BY candidate"
+    prep_subselect = "SELECT COUNT(*) AS Total, candidate FROM votes WHERE polParty = %s AND accId IS NOT NULL GROUP BY candidate"
     prep_select = (
         "SELECT MAX(Total), candidate FROM (" + prep_subselect + ") AS Results"
     )
@@ -56,7 +56,7 @@ def rep_votes():
     Finds which Republican candidate (if any exist) has the most votes
     """
     # Prepare SELECT statements
-    prep_subselect = "SELECT COUNT(*) AS Total, candidate FROM votes WHERE polParty = %s GROUP BY candidate"
+    prep_subselect = "SELECT COUNT(*) AS Total, candidate FROM votes WHERE polParty = %s AND accId IS NOT NULL GROUP BY candidate"
     prep_select = (
         "SELECT MAX(Total), candidate FROM (" + prep_subselect + ") AS Results"
     )
@@ -90,7 +90,7 @@ def ind_votes():
     Finds which Independent (Green Party and Libertarin) candidate (if any exist) has the most votes
     """
     # Prepare SELECT statements
-    prep_subselect = "SELECT COUNT(*) AS Total, candidate FROM votes WHERE polParty = %s or polParty = %s GROUP BY candidate"
+    prep_subselect = "SELECT COUNT(*) AS Total, candidate FROM votes WHERE (polParty = %s OR polParty = %s) AND accId IS NOT NULL GROUP BY candidate"
     prep_select = (
         "SELECT MAX(Total), candidate FROM (" + prep_subselect + ") AS Results"
     )

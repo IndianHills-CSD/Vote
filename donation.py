@@ -3,6 +3,7 @@
 import cgi, cgitb, re, encryptionlib as enc, os, mysql.connector as mysql, datetime as date
 from connectlib import connect_db
 from bitcoinlib import check_bc
+from cookielib import get_cookie
 
 
 def valid_account(uname, psw):
@@ -11,46 +12,70 @@ def valid_account(uname, psw):
     """
     errors = 0
 
-    # Username validation
-    if len(uname.strip()) == 0:
-        errors += 1
-        errmsgs.append("        <p>Username was not entered</p>")
-    elif len(uname.strip()) < 4:
-        errors += 1
-        errmsgs.append("        <p>Username should be at least 4 characters long</p>")
+    try:
+        # Username validation
+        if len(uname.strip()) == 0:
+            errors += 1
+            errmsgs.append("        <p>Username was not entered</p>")
+        elif len(uname.strip()) < 4:
+            errors += 1
+            errmsgs.append("        <p>Username should be at least 4 characters long</p>")
 
-    # Password validation
-    wschar = re.search("\s{1,}", psw)  # checks for any whitespace characters
-    digits = re.search("\d{1,}", psw)  # checks for 1 or more digits
+        # Password validation
+        wschar = re.search("\s{1,}", psw)  # checks for any whitespace characters
+        digits = re.search("\d{1,}", psw)  # checks for 1 or more digits
 
-    if len(psw.strip()) == 0:
-        errors += 1
-        errmsgs.append("        <p>Password was not entered</p>")
-    elif len(psw.strip()) < 8 or wschar or not digits:
-        errors += 1
-        errmsgs.append(
-            "        <p>Password should be at least 8 characters long and contain no whitespace characters and at least 1 digit</p>"
-        )
+        if len(psw.strip()) == 0:
+            errors += 1
+            errmsgs.append("        <p>Password was not entered</p>")
+        elif len(psw.strip()) < 8 or wschar or not digits:
+            errors += 1
+            errmsgs.append(
+                "        <p>Password should be at least 8 characters long and contain no whitespace characters and at least 1 digit</p>"
+            )
 
-    # Calls verify_account() when no errors occur
-    if errors == 0:
-        errors += verify_account(uname, psw)
+        # Calls verify_account() when no errors occur
+        if errors == 0:
+            errors += verify_account(uname, psw)
+        
+    except mysql.Error as e:
+        errors += 1
+        errmsgs.append("<p>" + str(e) + "</p>")
 
     return errors
 
 
 def verify_account(uname, psw):
     """
-    Verifies that an account exists by searching for it in the database
+    Checks if the account entered is the current account that is being used and calls a function for
+    searching for the account that was entered in the database
     """
-    errors = 0
+    errors = 0  # keeps track of all the errors that have been found
+    val_uname = get_cookie()  # gets the username the user logged in with
+
+    if val_uname != uname:
+        errors += 1
+        errmsgs.append(
+            "        <p>The username that was entered doesn't match the one that is currently being used</p>"
+        )
+    else:
+        errors += select_account(uname, psw)
+
+    return errors
+
+
+def select_account(uname, psw):
+    """
+    Verifies the username and password that was entered using a prepare statement
+    """
+    errors = 0  # keeps track of all the errors that have occurred
 
     # Prepare SELECT statement
     prep_select = "SELECT pwd FROM accounts WHERE uname = %s"
 
     # A tuple should always be used for binding placeholders (%s)
     cursor.execute(
-        prep_select, (uname,)  # you write (var,) when searching for one value
+        prep_select, (uname,)  # you write (value,) when searching for one value
     )
 
     # Gets all the rows from the results
@@ -68,6 +93,7 @@ def verify_account(uname, psw):
 
         (hashed_psw,) = result[0]  # unpacks the tuple
 
+        # Checks if the password that was entered is incorrect
         if not enc.verify_hash(hashed_psw, psw, salt):
             errors += 1
             errmsgs.append(
@@ -84,11 +110,15 @@ def find_salt():
     salt = ""  # returns nothing if invalid
 
     # Prepare SELECT statement
-    prep_select = "SELECT salt FROM accounts NATURAL JOIN salt WHERE accId = %s"
+    prep_select = "SELECT salt FROM salt WHERE accId = %s"
 
     accid = find_accid()
 
-    cursor.execute(prep_select, (accid,))
+    # A tuple should always be used for binding placeholders (%s)
+    cursor.execute(
+        prep_select, (accid,)  # you write (value,) when searching for one value
+    )
+
     result = cursor.fetchall()  # returns a list of tuples
 
     if result:
@@ -100,20 +130,23 @@ def find_salt():
 
 def find_accid():
     """
-    Finds the id of an account for the Salt and Donations tables
+    Finds the ID of an account for the Salt, Donations, and VoteDonate tables
     """
-    global uname
     accid = 0
 
     # Prepare SELECT statement
     prep_select = "SELECT accId FROM accounts WHERE uname = %s"
 
-    cursor.execute(prep_select, (uname,))
+    # A tuple should always be used for binding placeholders (%s)
+    cursor.execute(
+        prep_select, (uname,)  # you write (value,) when searching for one value
+    )
+
     result = cursor.fetchall()  # returns a list of tuples
 
     if result:
         (val_id,) = result[0]  # unpacks the tuple
-        accid = int(val_id)
+        accid = val_id
 
     return accid
 
@@ -199,7 +232,7 @@ def valid_creditcard(ccnum, cvv, expm, expy):
     if len(cvv) == 0:
         errors += 1
         errmsgs.append("        <p>CVV was not entered</p>")
-    elif int(cvv) < 100 or int(cvv) > 999:
+    elif len(cvv) != 3:
         errors += 1
         errmsgs.append("        <p>CVV must be 3 digits long</p>")
 
@@ -221,6 +254,56 @@ def valid_creditcard(ccnum, cvv, expm, expy):
             errmsgs.append(
                 "        <p>This credit card can no longer be used, it has already expired</p>"
             )
+
+    # Determines if verify_creditcard() should be called
+    if errors == 0:
+        errors += verify_creditcard(ccnum, cvv)
+
+    return errors
+
+
+def verify_creditcard(ccnum, cvv):
+    """
+    Checks if a similar credit card has been used by a previous user
+    """
+    errors = 0  # keeps track of all the errors that have been found
+    accid = find_accid()  # gets an ID
+
+    try:
+        # Prepare SELECT statement
+        # Note: MySQL uses "!=" and "<>" as not equal operators
+        prep_select = "SELECT credCardNum, cvv, salt FROM donations NATURAL JOIN accounts NATURAL JOIN salt WHERE accId != %s AND credCardNum IS NOT NULL AND cvv IS NOT NULL"
+
+        # A tuple should always be used for binding placeholders (%s)
+        cursor.execute(
+            prep_select, (accid,)  # you write (value,) when searching for one value
+        )
+
+        results = cursor.fetchall()  # returns a list of tuples
+
+        if results:
+            # Loops thru the tuples in the list
+            for i in range(len(results)):
+                (enc_ccnum, enc_cvv, str_salt) = results[i]  # unpacks a tuple in the list
+
+                # Converts the value of str_salt back to bytes
+                salt = eval(str_salt)
+
+                # Checks if the data that was entered is used by another user
+                if enc.verify_hash(enc_ccnum, ccnum, salt) and enc.verify_hash(
+                    enc_cvv, cvv, salt
+                ):
+                    errors += 1
+                    errmsgs.append(
+                        "        <p>This credit card contains information that is too similar to another user's credit card information</p>"
+                    )
+                    break
+
+    except Exception as e:
+        errors += 1
+        msg = "        <p>" + str(e) + "</p>"
+        errmsgs.append(msg)
+
     return errors
 
 
@@ -228,7 +311,7 @@ def valid_bitcoin(bitcoin):
     """
     Verifies the bitcoin that was entered
     """
-    errors = 0
+    errors = 0  # keeps track of all the errors that have been found
 
     if bitcoin == "17wR7WdrmLH6R387xeA3ahYCo91Up9A34T":
         errors += 1
@@ -240,20 +323,66 @@ def valid_bitcoin(bitcoin):
             errors += 1
             errmsgs.append("        <p>The Bitcoin that was entered is invalid</p>")
 
+    if errors == 0:
+        errors += verify_bitcoin(bitcoin)
+
+    return errors
+
+
+def verify_bitcoin(bitcoin):
+    """
+    Checks if the bitcoin address that was entered has been used before
+    """
+    errors = 0  # keeps track of all the errors that have been found
+    accid = find_accid()  # gets an ID
+
+    try:
+        # Prepare SELECT statement
+        # # Note: MySQL uses "!=" and "<>" as not equal operators
+        prep_select = "SELECT bitcoin, salt FROM donations NATURAL JOIN accounts NATURAL JOIN salt WHERE accId != %s"
+
+        # A tuple should always be used when binding placeholders (%s)
+        cursor.execute(
+            prep_select, (accid,)   # you use (value,) when searching for a single value
+        )
+
+        results = cursor.fetchall()  # returns a list of tuples
+
+        if results:
+            # Loops thru the tuples in the list
+            for i in range(len(results)):
+                (enc_bitcoin, str_salt) = results[i]  # unpacks a tuple in the list
+
+                # Converts the value of str_salt back to bytes
+                salt = eval(str_salt)
+
+                # Checks if the data that was entered is used by another user
+                if enc.verify_hash(enc_bitcoin, bitcoin, salt):
+                    errors += 1
+                    errmsgs.append(
+                        "        <p>This Bitcoin address is too similar to another user's Bitcoin address</p>"
+                    )
+                    break
+    
+    except mysql.Error as e:
+        errors += 1
+        msg = "        <p>" + str(e) + "</p>"
+        errmsgs.append(msg)
+
     return errors
 
 
 def insert_donation():
     """
-    Stores the donation that was placed in the Donations table
+    Stores the donation that was placed in the Donations table and uses a function to store donations
+    in the VoteDonate table
     """
     global errctr
+    accid = find_accid()  # gets an ID
 
     try:
-        accid = find_accid()  # gets an ID
-
-        # Generates a random number of bytes to be used to create a new hash
-        salt = os.urandom(64)
+        # Converts the string value that is returned in find_salt() back to bytes
+        salt = eval(find_salt())
 
         if bitcoin == "":
             # Encrypts the credit card number and CVV that was entered
@@ -278,12 +407,150 @@ def insert_donation():
             # A tuple should always be used for binding placeholders (%s)
             cursor.execute(prep_insert, (accid, amt, enc_bitcoin))
 
-        db.commit()  # saves changes
+            db.commit()  # saves changes
+
+        insert_votedonate()
 
     except mysql.Error as e:
         errctr += 1
-        msg = "        <p>" + e + "</p>"
+        msg = "        <p>" + str(e) + "</p>"
         errmsgs.append(msg)
+
+
+def insert_votedonate():
+    """
+    Stores extra donation information in the VoteDonate table
+    """
+    voteid = find_voteid()  # gets IDs (foriegn keys)
+    donatid = find_donatid()
+
+    donatdate = date.date.today().strftime("%Y-%m-%d")  # gets the current date
+
+    # Prepare INSERT statement
+    prep_insert = (
+        "INSERT INTO voteDonate (voteId, donatId, donatDate) VALUES (%s, %s, %s)"
+    )
+
+    # A tuple should always be used for binding placeholders (%s)
+    cursor.execute(prep_insert, (voteid, donatid, donatdate))
+
+    db.commit()  # saves changes
+
+
+def find_voteid():
+    """
+    Retrieves the ID of the candidate that a donation was placed for
+    """
+    voteid = 0  # returns "0" when no ID is found
+    accid = find_accid()
+    voted = voted_can(accid)
+
+    # Checks which SELECT statement should be used
+    if voted:
+        # Prepare SELECT statement with accid
+        prep_select = "SELECT voteId FROM votes WHERE candidate = %s AND accId = %s"
+
+        # A tuple should always be used when binding placeholders (%s)
+        cursor.execute(prep_select, (can, accid))
+    else:
+        # Prepare SELECT statement without accid
+        prep_select = "SELECT voteId FROM votes WHERE candidate = %s AND accId IS NULL"
+
+        # A tuple should always be used when binding placeholders (%s)
+        cursor.execute(
+            prep_select, (can,)  # you use (value,) when searching for a single value
+        )
+
+    result = cursor.fetchall()  # returns a list of tuples
+
+    if result:
+        if len(result) == 1:
+            (val_id,) = result[0]  # unpacks the tuple
+        elif len(result) > 1:
+            last = len(result) - 1  # calculates the index of the last tuple in the list
+            (val_id,) = result[last]  # unpacks the last tuple in the list
+
+        voteid = val_id
+
+    return voteid
+
+
+def voted_can(accid):
+    """
+    Checks if users donated to a candidate they did not vote for
+    """
+    # Prepare SELECT statement
+    prep_select = "SELECT accId FROM accounts NATURAL JOIN votes WHERE accId = %s and candidate = %s"
+
+    cursor.execute(prep_select, (accid, can))
+
+    results = cursor.fetchall()
+
+    if not results:
+        insert_no_vote()
+        return False
+    else:
+        return True
+
+
+def insert_no_vote():
+    """ "
+    Inserts a row with no foriegn key (accId) to represent that a user donated to a candidate but
+    didn't vote for them
+    """
+    prep_insert = "INSERT INTO votes (candidate, polParty) VALUES (%s, %s)"
+    party = find_party()
+
+    cursor.execute(prep_insert, (can, party))
+
+    db.commit()  # saves changes
+
+
+def find_party():
+    """
+    Finds the political party of a candidate
+    """
+    party = ""  # returns an empty string ("") when not found
+
+    # Prepare SELECT statement
+    prep_select = "SELECT polParty FROM votes WHERE candidate = %s"
+
+    cursor.execute(prep_select, (can,))
+    result = cursor.fetchall()
+
+    if result:
+        (polparty,) = result[0]
+        party = polparty
+
+    return party
+
+
+def find_donatid():
+    """
+    Retrieves the ID of the donation that was placed
+    """
+    donatid = 0  # returns "0" when no ID is found
+    accid = find_accid()
+
+    # Prepare SELECT statement
+    prep_select = "SELECT donatId FROM donations WHERE accId = %s"
+
+    # A tuple should always be used when binding placeholders (%s)
+    cursor.execute(
+        prep_select, (accid,)  # you use (value,) when searching for a single value
+    )
+
+    result = cursor.fetchall()  # returns a list of tuples
+
+    if len(result) == 1:
+        (val_id,) = result[0]  # unpacks the tuple
+    elif len(result) > 1:
+        last = len(result) - 1  # calculates the index of the last tuple in the list
+        (val_id,) = result[last]  # unpacks the last tuple in the list
+
+    donatid = val_id
+
+    return donatid
 
 
 # Intializes an empty list of error messages
@@ -298,7 +565,7 @@ errctr = 0  # keeps track of all errors
 form = cgi.FieldStorage()
 
 # Account Validation
-if not "uname" in form and not "psw" in form:
+if "uname" not in form and "psw" not in form:
     errctr += 1
     errmsgs.append("        <p>No account was entered</p>")
 else:
@@ -322,7 +589,7 @@ if "can" in form and "amt" in form:
     valid_amt(amt)
 else:
     errctr += 1
-    errmsgs.append("        <p>A donation was not placed for any canidate</p>")
+    errmsgs.append("        <p>A donation was not placed for any candidate</p>")
 
 
 # Credit Card Information Validation
