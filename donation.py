@@ -19,7 +19,9 @@ def valid_account(uname, psw):
             errmsgs.append("        <p>Username was not entered</p>")
         elif len(uname.strip()) < 4:
             errors += 1
-            errmsgs.append("        <p>Username should be at least 4 characters long</p>")
+            errmsgs.append(
+                "        <p>Username should be at least 4 characters long</p>"
+            )
 
         # Password validation
         wschar = re.search("\s{1,}", psw)  # checks for any whitespace characters
@@ -37,7 +39,7 @@ def valid_account(uname, psw):
         # Calls verify_account() when no errors occur
         if errors == 0:
             errors += verify_account(uname, psw)
-        
+
     except mysql.Error as e:
         errors += 1
         errmsgs.append("<p>" + str(e) + "</p>")
@@ -272,7 +274,7 @@ def verify_creditcard(ccnum, cvv):
     try:
         # Prepare SELECT statement
         # Note: MySQL uses "!=" and "<>" as not equal operators
-        prep_select = "SELECT credCardNum, cvv, salt FROM donations NATURAL JOIN accounts NATURAL JOIN salt WHERE accId != %s AND credCardNum IS NOT NULL AND cvv IS NOT NULL"
+        prep_select = "SELECT DISTINCT credCardNum, cvv, salt FROM donations NATURAL JOIN accounts NATURAL JOIN salt WHERE accId != %s AND credCardNum IS NOT NULL AND cvv IS NOT NULL"
 
         # A tuple should always be used for binding placeholders (%s)
         cursor.execute(
@@ -284,7 +286,8 @@ def verify_creditcard(ccnum, cvv):
         if results:
             # Loops thru the tuples in the list
             for i in range(len(results)):
-                (enc_ccnum, enc_cvv, str_salt) = results[i]  # unpacks a tuple in the list
+                # Unpacks a tuple in the list
+                (enc_ccnum, enc_cvv, str_salt) = results[i]
 
                 # Converts the value of str_salt back to bytes
                 salt = eval(str_salt)
@@ -299,12 +302,69 @@ def verify_creditcard(ccnum, cvv):
                     )
                     break
 
+            # Determines if cred_needs_updated() should be called
+            if errors == 0:
+                cred_needs_updated(ccnum, cvv, salt)
+
     except Exception as e:
         errors += 1
         msg = "        <p>" + str(e) + "</p>"
         errmsgs.append(msg)
 
     return errors
+
+
+def cred_needs_updated(ccnum, cvv, salt):
+    """
+    Determines if the credit card number and CVV for this user's credit card should be re-encrypted
+    """
+    accid = find_accid()  # gets an ID
+    updated = True  # used to determine if the credit card number and CVV needs to be re-encrypted
+
+    # Prepare SELECT statement
+    prep_select = "SELECT DISTINCT credCardNum, cvv, salt, updated FROM donations NATURAL JOIN accounts NATURAL JOIN salt WHERE accId = %s AND credCardNum IS NOT NULL AND cvv IS NOT NULL"
+
+    # A tuple should always be used for binding placeholders (%s)
+    cursor.execute(
+        prep_select, (accid,)  # you write (value,) when searching for one value
+    )
+
+    results = cursor.fetchall()  # returns a list of tuples
+
+    if results:
+        (enc_ccnum, enc_cvv, str_salt, update) = results[0]  # unpacks the tuple
+
+        # Converts the value of str_salt back to bytes
+        salt = eval(str_salt)
+
+        # Checks if the data that was entered should be re-encrypted
+        if update == "Y":
+            if enc.verify_hash(enc_ccnum, ccnum, salt) and enc.verify_hash(
+                enc_cvv, cvv, salt
+            ):
+                updated = False
+
+        if updated:
+            update_cred(ccnum, cvv, salt)
+
+
+def update_cred(ccnum, cvv, salt):
+    """
+    Re-Encrypts the credit card number and CVV that was entered
+    """
+    accid = find_accid()  # gets an ID
+
+    # Encrypts the credit card number and the CVV
+    enc_ccnum = enc.create_hash(ccnum, salt)
+    enc_cvv = enc.create_hash(cvv, salt)
+
+    # Prepare UPDATE statement
+    prep_update = "UPDATE donations SET credCardNum = %s, cvv = %s WHERE accId = %s"
+
+    # A tuple should always be used when binding placeholders (%s)
+    cursor.execute(prep_update, (enc_ccnum, enc_cvv, accid))
+
+    db.commit()  # saves changes
 
 
 def valid_bitcoin(bitcoin):
@@ -338,12 +398,12 @@ def verify_bitcoin(bitcoin):
 
     try:
         # Prepare SELECT statement
-        # # Note: MySQL uses "!=" and "<>" as not equal operators
-        prep_select = "SELECT bitcoin, salt FROM donations NATURAL JOIN accounts NATURAL JOIN salt WHERE accId != %s"
+        # Note: MySQL uses "!=" and "<>" as not equal operators
+        prep_select = "SELECT DISTINCT bitcoin, salt FROM donations NATURAL JOIN accounts NATURAL JOIN salt WHERE accId != %s"
 
         # A tuple should always be used when binding placeholders (%s)
         cursor.execute(
-            prep_select, (accid,)   # you use (value,) when searching for a single value
+            prep_select, (accid,)  # you use (value,) when searching for a single value
         )
 
         results = cursor.fetchall()  # returns a list of tuples
@@ -363,13 +423,63 @@ def verify_bitcoin(bitcoin):
                         "        <p>This Bitcoin address is too similar to another user's Bitcoin address</p>"
                     )
                     break
-    
+
     except mysql.Error as e:
         errors += 1
         msg = "        <p>" + str(e) + "</p>"
         errmsgs.append(msg)
 
     return errors
+
+
+def bitaddr_needs_updated(bitcoin):
+    """
+    Determines if the bitcoin address used by this user should be re-encrypted
+    """
+    update = True  # used to determine if the bitcoin address needs to be re-encrypted
+    accid = find_accid()  # gets an ID
+
+    # Prepare SELECT statement
+    prep_select = "SELECT DISTINCT bitcoin, salt, updated FROM donations NATURAL JOIN accounts NATURAL JOIN salt WHERE accId = %s AND credCardNum IS NOT NULL AND cvv IS NOT NULL"
+
+    # A tuple should always be used for binding placeholders (%s)
+    cursor.execute(
+        prep_select, (accid,)  # you write (value,) when searching for one value
+    )
+
+    results = cursor.fetchall()  # returns a list of tuples
+
+    if results:
+        (enc_bitcoin, str_salt, update) = results[0]  # unpacks the tuple
+
+        # Converts the value of str_salt back to bytes
+        salt = eval(str_salt)
+
+        # Checks if the data that was entered should be re-encrypted
+        if update == "Y":
+            if enc.verify_hash(enc_bitcoin, bitcoin, salt):
+                update = False
+
+        if update:
+            update_bitaddr(bitcoin, salt)
+
+
+def update_bitaddr(bitcoin, salt):
+    """
+    Re-Encrypts the bitcoin address that was entered
+    """
+    accid = find_accid()  # gets an ID
+
+    # Encrypts the credit card number and the CVV
+    enc_bitcoin = enc.create_hash(bitcoin, salt)
+
+    # Prepare UPDATE statement
+    prep_update = "UPDATE donations SET bitcoin = %s WHERE accId = %s"
+
+    # A tuple should always be used when binding placeholders (%s)
+    cursor.execute(prep_update, (enc_bitcoin, accid))
+
+    db.commit()  # saves changes
 
 
 def insert_donation():
