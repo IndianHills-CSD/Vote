@@ -21,11 +21,9 @@ def dem_votes():
     """
     Finds which Democratic candidate (if any exist) has the most votes
     """
-    # Prepare SELECT statements
-    prep_subselect = "SELECT COUNT(*) AS Total, candidate FROM votes WHERE polParty = %s AND accId IS NOT NULL GROUP BY candidate"
-    prep_select = (
-        "SELECT MAX(Total), candidate FROM (" + prep_subselect + ") AS Results"
-    )
+    # Prepare SELECT statement
+    # Note: LIMIT will limit the number of rows that will be displayed
+    prep_select = "SELECT COUNT(*) AS Total, candidate FROM votes WHERE polParty = %s AND accId IS NOT NULL GROUP BY candidate  ORDER BY Total DESC LIMIT 1"
 
     # A tuple should always be used for binding placeholders (%s)
     cursor.execute(
@@ -37,44 +35,9 @@ def dem_votes():
     content.append('      <div class="content">')
     content.append("        <h3>Democrat</h3>")
 
-    (votes, can) = results[0]  # unpacks the list of tuples
-
     # Checks if any results where found
-    if votes != None and can != None:
-        votes = "        <b>" + str(votes) + " vote(s)</b>"
-        can = "        <b>" + str(can) + "</b>"
-        content.append(can)
-        content.append(votes)
-    else:
-        content.append("        <b>No votes yet!</b>")
-
-    content.append("      </div>")
-
-
-def rep_votes():
-    """
-    Finds which Republican candidate (if any exist) has the most votes
-    """
-    # Prepare SELECT statements
-    prep_subselect = "SELECT COUNT(*) AS Total, candidate FROM votes WHERE polParty = %s AND accId IS NOT NULL GROUP BY candidate"
-    prep_select = (
-        "SELECT MAX(Total), candidate FROM (" + prep_subselect + ") AS Results"
-    )
-
-    # A tuple should always be used for binding placeholders (%s)
-    cursor.execute(
-        prep_select, ("Republican",)  # you use (value,) when searching for one value
-    )
-
-    results = cursor.fetchall()  # returns a list of tuples
-
-    content.append('      <div class="content">')
-    content.append("        <h3>Republican</h3>")
-
-    (votes, can) = results[0]  # unpacks the list of tuples
-
-    # Checks if any results where found
-    if votes != None and can != None:
+    if results:
+        (votes, can) = results[0]  # unpacks the list of tuples
         votes = "        <b>" + str(votes) + " vote(s)</b>"
         can = "        <b>" + str(can) + "</b>"
         content.append(can)
@@ -89,11 +52,9 @@ def ind_votes():
     """
     Finds which Independent (Green Party and Libertarin) candidate (if any exist) has the most votes
     """
-    # Prepare SELECT statements
-    prep_subselect = "SELECT COUNT(*) AS Total, candidate FROM votes WHERE (polParty = %s OR polParty = %s) AND accId IS NOT NULL GROUP BY candidate"
-    prep_select = (
-        "SELECT MAX(Total), candidate FROM (" + prep_subselect + ") AS Results"
-    )
+    # Prepare SELECT statement
+    # Note: LIMIT will limit the number of rows that will be displayed
+    prep_select = "SELECT COUNT(*) AS Total, candidate FROM votes WHERE (polParty = %s OR polParty = %s) AND accId IS NOT NULL GROUP BY candidate ORDER BY Total DESC LIMIT 1"
 
     # A tuple should always be used for binding placeholders (%s)
     cursor.execute(prep_select, ("Green Party", "Libertarian"))
@@ -103,10 +64,40 @@ def ind_votes():
     content.append('      <div class="content">')
     content.append("        <h3>Independent</h3>")
 
-    (votes, can) = results[0]  # unpacks the list of tuples
-
     # Checks if any results where found
-    if votes != None and can != None:
+    if results:
+        (votes, can) = results[0]  # unpacks the list of tuples
+        votes = "        <b>" + str(votes) + " vote(s)</b>"
+        can = "        <b>" + str(can) + "</b>"
+        content.append(can)
+        content.append(votes)
+    else:
+        content.append("        <b>No votes yet!</b>")
+
+    content.append("      </div>")
+
+
+def rep_votes():
+    """
+    Finds which Republican candidate (if any exist) has the most votes
+    """
+    # Prepare SELECT statement
+    # Note: LIMIT will limit the number of rows that will be displayed
+    prep_select = "SELECT COUNT(*) AS Total, candidate FROM votes WHERE polParty = %s AND accId IS NOT NULL GROUP BY candidate  ORDER BY Total DESC LIMIT 1"
+
+    # A tuple should always be used for binding placeholders (%s)
+    cursor.execute(
+        prep_select, ("Republican",)  # you use (value,) when searching for one value
+    )
+
+    results = cursor.fetchall()  # returns a list of tuples
+
+    content.append('      <div class="content">')
+    content.append("        <h3>Republican</h3>")
+
+    # Checks if any results were found
+    if results:
+        (votes, can) = results[0]  # unpacks the list of tuples
         votes = "        <b>" + str(votes) + " vote(s)</b>"
         can = "        <b>" + str(can) + "</b>"
         content.append(can)
@@ -122,7 +113,7 @@ db = connect_db()
 
 cursor = db.cursor(prepared=True)  # allows the prepare statement to be used
 
-# Intializes an empty l ist of candidate information, error messages, and HTML code
+# Intializes an empty list of candidate information, error messages, and HTML code
 content = []
 select_votes()
 
