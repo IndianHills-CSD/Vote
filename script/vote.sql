@@ -54,10 +54,11 @@ CREATE TABLE IF NOT EXISTS voteDonate (
 ) ENGINE = innoDB;
 
 /* Salt Table */
--- Creates the table that is used to contains the salt for encrypting data
+-- Creates the table that is used to contain the salt for encrypting data
 CREATE TABLE IF NOT EXISTS salt (
     salId INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     accId INT UNSIGNED,
     FOREIGN KEY(accId) REFERENCES accounts(accId),
-    salt VARCHAR(255)
+    salt VARCHAR(255),
+    updated CHAR(1) DEFAULT 'N' CHECK (updated = 'Y'OR updated = 'N')   -- indicates if an account was updated
 ) ENGINE = innoDB;

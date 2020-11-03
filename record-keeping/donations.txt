@@ -78,3 +78,14 @@ Donation 7:
 - Exp. Month: None
 - Exp. Year: None
 - Bitcoin: 1ETfSnf7me5No9HZ6aeYRyvQAffpPFvf9g
+
+Donation 8:
+- Username: red1
+- Password: r3dn3cks
+- Candidate: John Green
+- Amount: $19.00
+- Credit Card Number: 4321-54321-54321
+- CVV: 321
+- Exp. Month: September
+- Exp. Year: 2021
+- Bitcoin: None

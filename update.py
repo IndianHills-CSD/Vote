@@ -248,7 +248,7 @@ def find_encdata():
     """
     # The "uname" cookie is used in order to ensure that the original username is always used
     uname_cookie = get_cookie()  # gets the value of the "uname" cookie
-
+    
     # Prepare SELECT statement
     prep_select = "SELECT pwd, email FROM accounts WHERE uname = %s"
 
@@ -265,6 +265,30 @@ def find_encdata():
     else:
         return ("", "")
 
+
+def check_donations():
+    """
+    Checks if the user donated to any candidates
+    """
+    # The "uname" cookie is used in order to ensure that the original username is always used
+    uname_cookie = get_cookie()  # gets the value of the "uname" cookie
+    
+    # Prepare SELECT statement
+    prep_select = "SELECT credCardNum, cvv FROM donations NATURAL JOIN accounts WHERE uname = %s"
+    
+    # A tuple should always be used when binding placeholders (%s)
+    cursor.execute(
+        prep_select,
+        (uname_cookie,),  # you use (value,) when searching for a single value
+    )
+
+    result = cursor.fetchall()  # returns a list of tuples
+
+    if result:
+        return True
+    else:
+        return False
+    
 
 def find_salt():
     """
@@ -374,11 +398,9 @@ def update_salt(salt, accid):
     Updates the salt value that is used to encrypt data using the prepare statement
     """
     # Prepare UPDATE statement
-    prep_update = "UPDATE salt SET salt = %s WHERE accId = %s"
+    prep_update = "UPDATE salt SET salt = %s, updated = %s WHERE accId = %s"
 
-    cursor.execute(prep_update, (str(salt), accid))
-
-    db.commit()  # saves changes
+    cursor.execute(prep_update, (str(salt), "Y", accid))
 
 
 cgitb.enable()  # for debugging

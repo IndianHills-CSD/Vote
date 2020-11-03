@@ -4,26 +4,25 @@ import mysql.connector as mysql
 from connectlib import connect_db
 
 
-def select_votes():
+def select_totals():
     """
-    Retrieves all of the vote information about candidates from the Votes table
+    Retrieves all of the total donations to each candidate for the Donations table
     """
     try:
-        dem_votes()
-        ind_votes()
-        rep_votes()
+        total_dem()
+        total_ind()
+        total_rep()
     except mysql.Error as e:
         msg = "        <p>" + str(e) + "</p>"
         content.append(msg)
 
 
-def dem_votes():
+def total_dem():
     """
-    Finds which Democratic candidate (if any exist) has the most votes
+    Finds which Democratic candidate (if any exist) has recieved the most donations
     """
     # Prepare SELECT statement
-    # Note: LIMIT will limit the number of rows that will be displayed
-    prep_select = "SELECT COUNT(*) AS Total, candidate FROM votes WHERE polParty = %s AND accId IS NOT NULL GROUP BY candidate  ORDER BY Total DESC LIMIT 1"
+    prep_select = "SELECT SUM(amount) AS Total, candidate FROM donations LEFT JOIN voteDonate USING (donatId) LEFT JOIN votes USING (voteId) WHERE polParty = %s GROUP BY candidate ORDER BY Total DESC LIMIT 1"
 
     # A tuple should always be used for binding placeholders (%s)
     cursor.execute(
@@ -37,24 +36,23 @@ def dem_votes():
 
     # Checks if any results where found
     if results:
-        (votes, can) = results[0]  # unpacks the list of tuples
-        votes = "        <b>" + str(votes) + " vote(s)</b>"
+        (amt, can) = results[0]  # unpacks the list of tuples
+        amt = "        <b>$" + str(amt) + "</b>"
         can = "        <b>" + str(can) + "</b>"
         content.append(can)
-        content.append(votes)
+        content.append(amt)
     else:
-        content.append("        <b>No votes yet!</b>")
+        content.append("        <b>No donations yet!</b>")
 
     content.append("      </div>")
 
 
-def ind_votes():
+def total_ind():
     """
-    Finds which Independent (Green Party and Libertarin) candidate (if any exist) has the most votes
+    Finds which Independent (Green Party and Libertarin) candidate (if any exist) has recieved the most donations
     """
-    # Prepare SELECT statement
-    # Note: LIMIT will limit the number of rows that will be displayed
-    prep_select = "SELECT COUNT(*) AS Total, candidate FROM votes WHERE (polParty = %s OR polParty = %s) AND accId IS NOT NULL GROUP BY candidate ORDER BY Total DESC LIMIT 1"
+    # Prepare SELECT statements
+    prep_select = "SELECT SUM(amount) AS Total, candidate FROM donations LEFT JOIN voteDonate USING (donatId) LEFT JOIN votes USING (voteId) WHERE polParty = %s OR polParty = %s GROUP BY candidate ORDER BY Total DESC LIMIT 1"
 
     # A tuple should always be used for binding placeholders (%s)
     cursor.execute(prep_select, ("Green Party", "Libertarian"))
@@ -66,24 +64,23 @@ def ind_votes():
 
     # Checks if any results where found
     if results:
-        (votes, can) = results[0]  # unpacks the list of tuples
-        votes = "        <b>" + str(votes) + " vote(s)</b>"
+        (amt, can) = results[0]  # unpacks the list of tuples
+        amt = "        <b>$" + str(amt) + "</b>"
         can = "        <b>" + str(can) + "</b>"
         content.append(can)
-        content.append(votes)
+        content.append(amt)
     else:
-        content.append("        <b>No votes yet!</b>")
+        content.append("        <b>No donations yet!</b>")
 
     content.append("      </div>")
 
 
-def rep_votes():
+def total_rep():
     """
-    Finds which Republican candidate (if any exist) has the most votes
+    Finds which Republican candidate (if any exist) has recieved the most donations
     """
     # Prepare SELECT statement
-    # Note: LIMIT will limit the number of rows that will be displayed
-    prep_select = "SELECT COUNT(*) AS Total, candidate FROM votes WHERE polParty = %s AND accId IS NOT NULL GROUP BY candidate  ORDER BY Total DESC LIMIT 1"
+    prep_select = "SELECT SUM(amount) AS Total, candidate FROM donations LEFT JOIN voteDonate USING (donatId) LEFT JOIN votes USING (voteId) WHERE polParty = %s GROUP BY candidate ORDER BY Total DESC LIMIT 1"
 
     # A tuple should always be used for binding placeholders (%s)
     cursor.execute(
@@ -95,15 +92,15 @@ def rep_votes():
     content.append('      <div class="content">')
     content.append("        <h3>Republican</h3>")
 
-    # Checks if any results were found
+    # Checks if any results where found
     if results:
-        (votes, can) = results[0]  # unpacks the list of tuples
-        votes = "        <b>" + str(votes) + " vote(s)</b>"
+        (amt, can) = results[0]  # unpacks the list of tuples
+        amt = "        <b>$" + str(amt) + "</b>"
         can = "        <b>" + str(can) + "</b>"
         content.append(can)
-        content.append(votes)
+        content.append(amt)
     else:
-        content.append("        <b>No votes yet!</b>")
+        content.append("        <b>No donations yet!</b>")
 
     content.append("      </div>")
 
@@ -113,16 +110,16 @@ db = connect_db()
 
 cursor = db.cursor(prepared=True)  # allows the prepare statement to be used
 
-# Intializes an empty list of candidate information, error messages, and HTML code
+# Intializes an empty list of total donation information, error messages, and HTML code
 content = []
-select_votes()
+select_totals()
 
 print("Content-Type: text/html\n")
 
 print("<!DOCTYPE html>")
 print('<html lang="en">')
 print("  <head>")
-print("    <title>Results</title>")
+print("    <title>Totals</title>")
 print('    <meta name="viewport" content="width=device-width, initial-scale=1.0">')
 print("    <!-- Font Awesome Script -->")
 print("    <script")
@@ -210,8 +207,7 @@ print("        </div>")
 print("      </nav>")
 print("    </header>")
 print('    <div id="main">')
-print('      <h1 id="heading">Results</h1>')
-
+print('      <h1 id="heading">Totals</h1>')
 
 # Prints all of the content in the list
 for i in range(len(content)):
