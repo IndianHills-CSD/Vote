@@ -71,7 +71,7 @@ def valid_address(addr, cty, st, zip):
         if not addrformat:
             errors += 1
             errmsgs.append(
-                "        <p>Address is not in the correct format, it should looke something like this: 123 North Street</p>"
+                '        <div class="center">\n\t\t  <p>Address is not in the correct format, it should looke something like this: 123 North Street</p>\n\t\t  </div>'
             )
 
     if len(cty.strip()) == 0:
@@ -139,7 +139,7 @@ def valid_account(uname, psw1, psw2):
     if len(psw1.strip()) == 0 or len(psw2.strip()) == 0:
         errors += 1
         errmsgs.append(
-            "        <p>Password was either not entered at all or not re-entered</p>"
+            '       <div class="center">\n\t\t  <p>Password was either not entered at all or not re-entered</p>\n\t\t  </div>'
         )
         val_psws = False
     elif (
@@ -152,7 +152,7 @@ def valid_account(uname, psw1, psw2):
     ):
         errors += 1
         errmsgs.append(
-            "        <p>Password should be at least 8 characters long, contain no whitespace characters, and contain at least 1 digit</p>"
+            '        <div class="center">\n\t\t  <p>Password should be at least 8 characters long, contain no whitespace characters, and contain at least 1 digit</p>\n\t\t  </div>'
         )
         val_psws = False
 
@@ -160,7 +160,7 @@ def valid_account(uname, psw1, psw2):
         if psw1.strip() != psw2.strip():
             errors += 1
             errmsgs.append(
-                "        <p>The password that was re-entered does not match the original password that was entered</p>"
+                '        <div class="center">\n\t\t  <p>The password that was re-entered does not match the original password that was entered</p>\n\t\t  </div>'
             )
 
     return errors
@@ -248,7 +248,7 @@ def find_encdata():
     """
     # The "uname" cookie is used in order to ensure that the original username is always used
     uname_cookie = get_cookie()  # gets the value of the "uname" cookie
-    
+
     # Prepare SELECT statement
     prep_select = "SELECT pwd, email FROM accounts WHERE uname = %s"
 
@@ -272,10 +272,12 @@ def check_donations():
     """
     # The "uname" cookie is used in order to ensure that the original username is always used
     uname_cookie = get_cookie()  # gets the value of the "uname" cookie
-    
+
     # Prepare SELECT statement
-    prep_select = "SELECT credCardNum, cvv FROM donations NATURAL JOIN accounts WHERE uname = %s"
-    
+    prep_select = (
+        "SELECT credCardNum, cvv FROM donations NATURAL JOIN accounts WHERE uname = %s"
+    )
+
     # A tuple should always be used when binding placeholders (%s)
     cursor.execute(
         prep_select,
@@ -288,7 +290,7 @@ def check_donations():
         return True
     else:
         return False
-    
+
 
 def find_salt():
     """

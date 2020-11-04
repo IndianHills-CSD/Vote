@@ -42,7 +42,7 @@ def valid_account(uname, psw1, psw2):
     ):
         errors += 1
         errmsgs.append(
-            "        <p>Password should be at least 8 characters long, contain no whitespace characters, and contain at least 1 digit</p>"
+            '        <div class="center">\n\t\t  <p>Password should be at least 8 characters long, contain no whitespace characters, and contain at least 1 digit</p>\n\t\t  </div>'
         )
         val_psws = False
 
@@ -50,7 +50,7 @@ def valid_account(uname, psw1, psw2):
         if psw1.strip() != psw2.strip():
             errors += 1
             errmsgs.append(
-                "        <p>The password that was re-entered does not match the original password that was entered</p>"
+                '        <div class="center">\n\t\t  <p>The password that was re-entered does not match the original password that was entered</p>\n\t\t  </div>'
             )
 
     return errors
@@ -147,7 +147,7 @@ def update_psw(uname, psw):
     """
     Updates the user's password in the Accounts table using the prepare statement
     """
-    salt = os.urandom(64)  # generates a new salt value
+    salt = eval(find_salt())  # converts the value returned back to bytes
     enc_psw = enc.create_hash(psw, salt)  # encrypts the new password that was entered
 
     # Prepare UPDATE statement
@@ -156,23 +156,53 @@ def update_psw(uname, psw):
     # A tuple should always be used when binding placeholders (%s)
     cursor.execute(prep_update, (enc_psw, uname))
 
-    update_salt(salt)
-
     db.commit()  # saves changes
 
 
-def update_salt(salt):
+def find_salt():
     """
-    Updates the salt value that is used to encrypt the user's password using the prepare statement
+    Determines which salt to use for encrypting passwords
     """
-    accid = get_accid()  # gets an ID
+    salt = ""  # returns nothing if invalid
 
-    # Prepare INSERT statement
-    prep_update = "UPDATE salt SET salt = %s WHERE accId = %s"
+    # Prepare SELECT statement
+    prep_select = "SELECT salt FROM salt WHERE accId = %s"
 
-    cursor.execute(prep_update, (str(salt), accid))
+    accid = find_accid()
 
-    db.commit()  # saves changes
+    # A tuple is always use when binding placeholders (%s)
+    cursor.execute(
+        prep_select, (accid,)  # you write (var,) when searching for one value
+    )
+    result = cursor.fetchall()  # returns a list of tuples
+
+    if result:
+        (val_salt,) = result[0]  # unpacks the tuple
+        salt = val_salt
+
+    return salt
+
+
+def find_accid():
+    """
+    Finds the id of an account in the Salt table
+    """
+    accid = 0
+
+    # Prepare SELECT statement
+    prep_select = "SELECT accId FROM accounts WHERE uname = %s"
+
+    # A tuple is always use when binding placeholders (%s)
+    cursor.execute(
+        prep_select, (uname,)  # you write (var,) when searching for one value
+    )
+    result = cursor.fetchall()  # returns a list of tuples
+
+    if result:
+        (val_id,) = result[0]  # unpacks the tuple
+        accid = int(val_id)
+
+    return accid
 
 
 errctr = 0  # keeps track of the total number of errors that have been found

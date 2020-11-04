@@ -70,7 +70,7 @@ def valid_address(addr, cty, st, zip):
         if not addrformat:
             errors += 1
             errmsgs.append(
-                "        <p>Address is not in the correct format, it should looke something like this: 123 North Street</p>"
+                '        <div class="center">\n\t\t  <p>Address is not in the correct format, it should looke something like this: 123 North Street</p>\n\t\t  </div>'
             )
 
     if len(cty.strip()) == 0:
@@ -108,7 +108,7 @@ def valid_email(email):
     elif not emailformat:
         errors += 1
         errmsgs.append(
-            "        <p>Email is not in the correct format, it should look something like this: example@gmail.com</p>"
+            '        <div class="center">\n\t\t  <p>Email is not in the correct format, it should look something like this: example@gmail.com</p>\n\t\t  </div>'
         )
     return errors
 
@@ -138,7 +138,7 @@ def valid_account(uname, psw1, psw2):
     if len(psw1.strip()) == 0 or len(psw2.strip()) == 0:
         errors += 1
         errmsgs.append(
-            "        <p>Password was either not entered at all or not re-entered</p>"
+            '        <div class="center">\n\t\t  <p>Password was either not entered at all or not re-entered</p>\n\t\t  </div>'
         )
         val_psws = False
     elif (
@@ -151,7 +151,7 @@ def valid_account(uname, psw1, psw2):
     ):
         errors += 1
         errmsgs.append(
-            "        <p>Password should be at least 8 characters long, contain no whitespace characters, and contain at least 1 digit</p>"
+            '        <div class="center">\n\t\t  <p>Password should be at least 8 characters long and contain no whitespace characters and at least 1 digit</p>\n\t\t  </div>'
         )
         val_psws = False
 
@@ -159,7 +159,7 @@ def valid_account(uname, psw1, psw2):
         if psw1.strip() != psw2.strip():
             errors += 1
             errmsgs.append(
-                "        <p>The password that was re-entered does not match the original password that was entered</p>"
+                '        <div class="center">\n\t\t  <p>The password that was re-entered does not match the original password that was entered</p>\n\t\t  </div>'
             )
 
     return errors

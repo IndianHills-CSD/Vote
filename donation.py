@@ -33,7 +33,7 @@ def valid_account(uname, psw):
         elif len(psw.strip()) < 8 or wschar or not digits:
             errors += 1
             errmsgs.append(
-                "        <p>Password should be at least 8 characters long and contain no whitespace characters and at least 1 digit</p>"
+                '        <div class="center">\n\t\t  <p>Password should be at least 8 characters long and contain no whitespace characters and at least 1 digit</p>\n\t\t</div>'
             )
 
         # Calls verify_account() when no errors occur
@@ -57,9 +57,7 @@ def verify_account(uname, psw):
 
     if val_uname != uname:
         errors += 1
-        errmsgs.append(
-            "        <p>The username that was entered doesn't match the one that is currently being used</p>"
-        )
+        errmsgs.append("        <p>Your username was not entered</p>")
     else:
         errors += select_account(uname, psw)
 
@@ -86,9 +84,7 @@ def select_account(uname, psw):
     # Checks if no matches were found
     if not result:
         errors += 1
-        errmsgs.append(
-            "        <p>The username that was entered doesn't exist, please consider creating an account</p>"
-        )
+        errmsgs.append("        <p>The username that was entered doesn't exist</p>")
     else:
         # Converts the string value that is returned in find_salt() back to bytes
         salt = eval(find_salt())
@@ -99,7 +95,7 @@ def select_account(uname, psw):
         if not enc.verify_hash(hashed_psw, psw, salt):
             errors += 1
             errmsgs.append(
-                "        <p>The password that was entered is not correct for the username that was entered</p>"
+                "        <p>The password that was entered is not correct</p>"
             )
 
     return errors
@@ -168,7 +164,7 @@ def valid_candidate(can):
     elif not canformat:
         errors += 1
         errmsgs.append(
-            "        <p>The name of a candidate should include their firstname and lastname</p>"
+            '        <div class="center">\n\t\t  <p>The name of a candidate should include their firstname and lastname</p>\n\t\t  </div>'
         )
 
     if errors == 0:
@@ -228,15 +224,15 @@ def valid_creditcard(ccnum, cvv, expm, expy):
     elif not ccnumformat:
         errors += 1
         errmsgs.append(
-            "        <p>Credit card number is in the incorrect format, it should look something like this: 1234-12345-12345</p>"
+            '        <div class="center">\n\t\t  <p>Credit card number is in the incorrect format, it should look something like this: 1234-12345-12345</p>\n\t\t  </div>'
         )
 
     if len(cvv) == 0:
         errors += 1
         errmsgs.append("        <p>CVV was not entered</p>")
-    elif len(cvv) != 3:
+    elif len(cvv) != 3 and len(cvv) != 4:
         errors += 1
-        errmsgs.append("        <p>CVV must be 3 digits long</p>")
+        errmsgs.append("        <p>CVV must be 3 to 4 digits long</p>")
 
     if len(expm.strip()) == 0 or len(expy.strip()) == 0:
         errors += 1
@@ -246,19 +242,15 @@ def valid_creditcard(ccnum, cvv, expm, expy):
         currmon = date.datetime.today().strftime("%m")
         monnum = date.datetime.strptime(str(expm), "%B").month
 
-        if int(currmon) > monnum and int(curryr) > int(expy):
+        if int(curryr) > int(expy):
             errors += 1
-            errmsgs.append(
-                "        <p>This credit card can no longer be used, it has already expired</p>"
-            )
+            errmsgs.append("        <p>This credit card has expired</p>")
         elif int(currmon) > monnum and int(curryr) == int(expy):
             errors += 1
-            errmsgs.append(
-                "        <p>This credit card can no longer be used, it has already expired</p>"
-            )
+            errmsgs.append("        <p>This credit card has expired</p>")
 
     # Determines if verify_creditcard() should be called
-    if errors == 0:
+    if errors == 0 and errctr == 0:
         errors += verify_creditcard(ccnum, cvv)
 
     return errors
@@ -298,7 +290,7 @@ def verify_creditcard(ccnum, cvv):
                 ):
                     errors += 1
                     errmsgs.append(
-                        "        <p>This credit card contains information that is too similar to another user's credit card information</p>"
+                        '        <div class="center">\n\t\t  <p>This credit card contains information that is too similar to another user\'s credit card information</p>\n\t\t  </div>'
                     )
                     break
 
@@ -420,7 +412,7 @@ def verify_bitcoin(bitcoin):
                 if enc.verify_hash(enc_bitcoin, bitcoin, salt):
                     errors += 1
                     errmsgs.append(
-                        "        <p>This Bitcoin address is too similar to another user's Bitcoin address</p>"
+                        '        <div class="center">\n\t\t  <p>This Bitcoin address is too similar to another user\'s Bitcoin address</p>\n\t\t  </div>'
                     )
                     break
 

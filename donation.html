@@ -147,6 +147,7 @@
             <a
               class="bc-btn"
               onclick="document.getElementById('overlay').style.display = 'block';"
+              title="Pay with Bitcoin"
               ><i class="fab fa-bitcoin"></i> Pay with Bitcoin</a
             >
           </div>
@@ -157,10 +158,13 @@
           <div id="bitcoin">
             <span
               class="close-btn"
+              title="Close"
               onclick="document.getElementById('overlay').style.display = 'none';"
               ><i class="fas fa-times"></i
             ></span>
-            <h2>Scan the QR code or enter your address below</h2>
+            <div class="center">
+              <h2>Scan the QR code or enter your address below</h2>
+            </div>
             <img src="images/QR-Code-PNG-Picture.png" />
             <br />
             <div class="row">
@@ -184,11 +188,11 @@
         <!-- Buttons -->
         <div class="row">
           <div class="col-50">
-            <input type="submit" value="Submit" />
+            <input type="submit" value="Submit" title="Submit" />
           </div>
 
           <div class="col-50">
-            <input type="reset" value="Clear" />
+            <input type="reset" value="Clear" title="Clear" />
           </div>
         </div>
       </form>

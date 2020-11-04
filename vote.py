@@ -27,11 +27,44 @@ def valid_vote(party, can):
     elif not canformat:
         errors += 1
         errmsgs.append(
-            "        <p>The name of a candidate should include their first and last name</p>"
+            '        <div class="center">\n\t\t  <p>The name of a candidate should include their firstname and lastname</p>\n\t\t  </div>'
         )
 
     if errors == 0:
-        insert_vote()
+        errors += not_voted()
+
+    return errors
+
+
+def not_voted():
+    """
+    Checks if the user has not voted yet
+    """
+    errors = 0
+
+    try:
+        accid = find_accid()  # gets an id
+
+        # Prepare SELECT statement
+        prep_select = "SELECT * FROM votes WHERE accId = %s"
+
+        # A tuple is always used when binding placeholders (%s)
+        cursor.execute(
+            prep_select, (accid,)
+        )  # (value,) used when searching for a single value
+
+        result = cursor.fetchall()  # returns a list of tuples
+
+        if result:
+            errors += 1
+            errmsgs.append("        <p>You can only vote once</p>")
+        else:
+            insert_vote()
+
+    except mysql.Error as e:
+        errors += 1
+        msg = "        <p> " + str(e) + " </p>"
+        errmsgs.append(msg)
 
     return errors
 
@@ -40,24 +73,15 @@ def insert_vote():
     """
     Stores the vote that was place by the user
     """
-    global errctr
+    accid = find_accid()  # gets an id
 
-    try:
-        accid = find_accid()  # gets an id
+    # Prepare INSERT statement
+    prep_insert = "INSERT INTO votes (accId, candidate, polParty) VALUES (%s, %s, %s)"
 
-        # Prepare INSERT statement
-        prep_insert = (
-            "INSERT INTO votes (accId, candidate, polParty) VALUES (%s, %s, %s)"
-        )
+    # A tuple should always be used to bind placeholders (%s)
+    cursor.execute(prep_insert, (accid, can, party[0]))
 
-        # A tuple should always be used to bind placeholders (%s)
-        cursor.execute(prep_insert, (accid, can, party[0]))
-
-        db.commit()  # saves changes
-    except mysql.Error as e:
-        errctr += 1
-        msg = "        <p> " + e + " </p>"
-        errmsgs.append(msg)
+    db.commit()  # saves changes
 
 
 def find_accid():

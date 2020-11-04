@@ -58,9 +58,7 @@ def verify_account(uname, psw):
     # Checks if no matches were found
     if not result:
         errors += 1
-        errmsgs.append(
-            "        <p>The username that was entered doesn't exist, please consider creating an account</p>"
-        )
+        errmsgs.append("        <p>The username that was entered doesn't exist</p>")
     else:
         # Converts the string value that is returned in find_salt() back to bytes
         salt = eval(find_salt())
@@ -70,7 +68,7 @@ def verify_account(uname, psw):
         if not enc.verify_hash(hashed_psw, psw, salt):
             errors += 1
             errmsgs.append(
-                "        <p>The password that was entered is not correct for the username that was entered</p>"
+                "        <p>The password that was entered is not correct</p>"
             )
 
     return errors

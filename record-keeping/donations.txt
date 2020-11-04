@@ -89,3 +89,14 @@ Donation 8:
 - Exp. Month: September
 - Exp. Year: 2021
 - Bitcoin: None
+
+Donation 9:
+- Username: user
+- Password: passw0rd
+- Candidate: Candi Date
+- Amount: $10.70
+- Credit Card Number: 1234-12345-12345
+- CVV: 123
+- Exp. Month: July
+- Exp. Year: 2021
+- Bitcoin: None
