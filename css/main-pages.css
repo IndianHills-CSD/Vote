@@ -277,6 +277,15 @@ input[type="reset"] {
 
 /* donation.html Styles */
 
+select:disabled {
+    opacity: 1;
+    cursor: default;
+}
+
+input:disabled {
+    background-color: #fff;
+}
+
 
 /* The wrapper for the amount field that is used to dislay a dollar sign */
 

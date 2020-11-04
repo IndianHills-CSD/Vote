@@ -23,8 +23,9 @@
     <!-- Custom Stylesheet -->
     <link rel="stylesheet" href="css/main-pages.css" />
 
-    <!-- Custom Script -->
+    <!-- Custom Scripts -->
     <script src="js/monthsAndDecimals.js" defer></script>
+    <script src="js/disableFields.js" defer></script>
   </head>
   <body>
     <header>
@@ -179,7 +180,11 @@
               </div>
               <div class="col-75">
                 <label for="sender">Sender</label>
-                <input type="text" name="sender" />
+                <input
+                  type="text"
+                  name="sender"
+                  onfocusout="disableCredFields()"
+                />
               </div>
             </div>
           </div>

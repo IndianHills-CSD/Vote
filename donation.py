@@ -167,7 +167,7 @@ def valid_candidate(can):
             '        <div class="center">\n\t\t  <p>The name of a candidate should include their firstname and lastname</p>\n\t\t  </div>'
         )
 
-    if errors == 0:
+    if errors == 0 and errctr == 0:
         errors += verify_candidate(can)
 
     return errors
@@ -368,14 +368,16 @@ def valid_bitcoin(bitcoin):
     if bitcoin == "17wR7WdrmLH6R387xeA3ahYCo91Up9A34T":
         errors += 1
         errmsgs.append(
-            "        <p>The Bitcoin that was entered should not match the recipient's Bitcoin</p>"
+            '        <div class="center">\n\t\t  <p>The Bitcoin that was entered should not match the recipient\'s Bitcoin</p>\n\t\t  </div>'
         )
     else:
         if not check_bc(bitcoin):
             errors += 1
-            errmsgs.append("        <p>The Bitcoin that was entered is invalid</p>")
+            errmsgs.append(
+                '        <div class="center">\n\t\t  <p>The Bitcoin that was entered is invalid</p>\n\t\t  </div>'
+            )
 
-    if errors == 0:
+    if errors == 0 and errctr == 0:
         errors += verify_bitcoin(bitcoin)
 
     return errors
