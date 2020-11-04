@@ -37,7 +37,7 @@ a:not(.cancel):not(.delete):active {
     align-items: center;
     flex-direction: column;
     /* For scroll bar */
-    position: absolute;
+    position: fixed;
     top: 0;
     bottom: 0;
     left: 0;
@@ -210,7 +210,7 @@ form[name="reset"] .separate {
 form[name="signup"],
 form[name="update"] {
     padding: 15px;
-    width: 90%;
+    min-width: 90%;
     font-size: 0.8em;
 }
 
@@ -255,3 +255,35 @@ form[name="update"] .separate {
 
 
 /* Media Queries */
+
+@media only screen and (max-width: 889px) {
+    #content {
+        margin: 0 1em;
+    }
+    .center {
+        height: auto;
+        width: auto;
+        display: table;
+        margin: 5px 0;
+    }
+    .center p,
+    .center h1 {
+        display: table-cell;
+        vertical-align: middle;
+        text-align: center;
+    }
+}
+
+@media only screen and (max-width: 806px) {
+    #container.special {
+        position: sticky;
+    }
+    form {
+        padding: 10px;
+    }
+    form[name="signup"] .row,
+    form[name="update"] .row:not(.btns),
+    form[name="reset"] .row {
+        flex-flow: column wrap;
+    }
+}

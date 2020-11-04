@@ -136,7 +136,7 @@ nav a:visited {
 }
 
 
-/* index.html and results.py */
+/* index.html and results.py Styles */
 
 #content,
 .content {
@@ -154,18 +154,18 @@ nav a:visited {
     z-index: -1;
     top: 40%;
     padding: 25px;
-    min-width: 40%;
+    min-width: 30%;
     border: 5px solid #af002a;
 }
 
 
-/* vote.html & donation.html styles */
+/* vote.html & donation.html Styles */
 
 form {
     color: #fff;
     padding: 15px;
     margin-top: 5px;
-    min-width: 45%;
+    min-width: 70%;
     background: linear-gradient( to right, rgba(167, 167, 209, 0.7), rgba(255, 255, 255, 0.9), rgba(178, 34, 52, 0.5)), url(../images/pexels-sharefaith-1202723-640.jpg) no-repeat;
     background-size: 100% 100%;
     box-shadow: 0 0 0 5px #00f, 0 0 0 10px #fff, 0 0 0 15px #f00;
@@ -277,6 +277,15 @@ input[type="reset"] {
 
 /* donation.html Styles */
 
+select:disabled {
+    opacity: 1;
+    cursor: default;
+}
+
+input:disabled {
+    background-color: #fff;
+}
+
 
 /* The wrapper for the amount field that is used to dislay a dollar sign */
 
@@ -296,14 +305,14 @@ div.usd::after {
 }
 
 
-/* display the dollar sign */
+/* Displays the dollar sign */
 
 .usd::after {
     content: "$";
 }
 
 
-/* Used to hide the modal for bitcoin */
+/* Used to hide the modal for paying with Bitcoin */
 
 .bc-btn {
     display: inline-block;
@@ -382,7 +391,7 @@ label.radio-label {
 }
 
 
-/* results.py Styles */
+/* results.py & totals.py Styles */
 
 #heading {
     text-align: center;
@@ -401,7 +410,7 @@ label.radio-label {
 
 .content b {
     display: block;
-    margin: 16px 0;
+    margin: 16px 0 8px;
 }
 
 
@@ -414,12 +423,13 @@ label.radio-label {
     h4,
     h5,
     h6 {
-        margin-top: 0;
-        margin-bottom: 5px;
+        margin: 8px 0;
     }
     form {
         padding: 10px;
-        margin-bottom: 50px;
+    }
+    form[name="donate"] {
+        margin-bottom: 1.25em;
     }
     .row {
         margin: 0 -8px;
@@ -433,24 +443,83 @@ label.radio-label {
     .bc-btn {
         margin: 6px 0;
     }
+    label.radio-label {
+        font-size: 1em;
+    }
     form[name="donate"] label {
         font-size: 1.1em
     }
     div.usd {
         display: block;
     }
-    #bitcoin {
-        top: 3%;
+    div.usd::after {
+        top: 28%;
     }
     .bc-btn {
         font-size: 1em;
         width: auto;
         padding: 5px;
     }
-    .content b {
-        margin: 8px 0;
+    #bitcoin {
+        top: 8%;
+        left: .5em;
+        right: .5em;
     }
-    label.radio-label {
-        font-size: 1em;
+    .close-btn {
+        top: .1em;
+        left: .5em;
+    }
+}
+
+@media only screen and (max-width: 971px) {
+    #bitcoin {
+        padding: 10px;
+        left: .1em;
+        right: .1em;
+    }
+    #bitcoin h2 {
+        font-size: 1.9rem;
+        padding: 1.5em 0 0;
+    }
+    #bitcoin img {
+        margin: 5px 0 0;
+        height: 8em;
+        width: 9em;
+    }
+    .center {
+        height: auto;
+        width: auto;
+        display: table;
+    }
+    .center h2 {
+        display: table-cell;
+        vertical-align: middle;
+        text-align: center;
+    }
+}
+
+@media only screen and (max-width: 761px) {
+    #content {
+        padding: 15px;
+        margin: 0 1em;
+    }
+}
+
+@media only screen and (max-width: 667px) {
+    .dropdown {
+        width: 40%;
+    }
+}
+
+@media only screen and (max-width: 585px) {
+    .item-container {
+        z-index: 0;
+        margin-left: 125px;
+    }
+}
+
+@media only screen and (max-width: 499px) {
+    .item-container {
+        margin-left: 110px;
     }
 }

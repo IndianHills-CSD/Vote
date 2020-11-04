@@ -13,6 +13,8 @@ def delete_account():
     uname = get_cookie()  # gets the current username that is being used
 
     try:
+        delete_salt()
+
         # Prepared DELETE statement
         prep_delete = "DELETE FROM accounts WHERE uname = %s"
 
@@ -20,8 +22,6 @@ def delete_account():
         cursor.execute(
             prep_delete, (uname,)  # you use (value,) when searching for a single value
         )
-
-        delete_salt()
 
         db.commit()  # saves changes
     except mysql.Error as e:
@@ -101,7 +101,9 @@ if err:
     print("        <h1>Error</h1>")
     print(errmsg)
 else:
-    print("        <h1>Your account was deleted!</h1>")
+    print('        <div class="center">')
+    print("          <h1>Your account was deleted!</h1>")
+    print("        </div>\n")
     print("        <p>Your account has been successfully deleted</p>")
     print('        <a href="login.html">Click here to continue</a>')
 
